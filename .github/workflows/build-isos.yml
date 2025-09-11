@@ -1,0 +1,65 @@
+name: Build and Release ISO Images
+
+# TODO: redo this and setup workflows for lints and bumping flake inputs
+on:
+  push:
+    paths:
+      - "flake.*"
+      - "modules/iso/**"
+      - "modules/common/**"
+      - ".github/workflows/build-isos.yml"
+  workflow_dispatch:
+
+permissions:
+  attestations: write
+  contents: write
+
+jobs:
+  build-isos:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Maximize Space
+        uses: easimon/maximize-build-space@v10
+        with:
+          overprovision-lvm: true
+          remove-android: true
+          remove-dotnet: true
+          remove-codeql: true
+          remove-haskell: true
+          remove-docker-images: true
+
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install Lix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          source-url: "https://install.lix.systems/lix/lix-installer-x86_64-linux"
+          logger: pretty
+          diagnostic-endpoint: ""
+          extra-conf: |
+            experimental-features = flakes nix-command pipe-operator
+            substituters = https://nix-community.cachix.org https://cache.nixos.org/
+            trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+
+      - name: Nix Cache
+        uses: DeterminateSystems/magic-nix-cache-action@v13
+
+      - name: Loosen apparmor restrictions
+        run: |
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_unconfined=0
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
+      - name: Build Iso
+        continue-on-error: false
+        run: nix build -L .#nixosConfigurations.blume.config.system.build.isoImage
+
+      - name: Upload Release Artifacts
+        run: |
+          rev=$(nix eval --raw .#nixosConfigurations.blume.config.system.configurationRevision)
+          release=$(date +"%Y-%m-%d")
+          gh release create "$release-$rev"
+          gh release upload "$release-$rev" ./result/iso/*.iso
+        env:
+          GH_TOKEN: ${{ github.token }}
