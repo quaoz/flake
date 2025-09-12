@@ -37,7 +37,7 @@ in {
       status=$(${statusCommand})
 
       if [[ "$status" == "NeedsLogin" || "$status" == "NeedsMachineAuth" ]]; then
-        ${lib.getExe package} up --reset --login-server=https://hs.${config.garden.domain} --auth-key=file:${authKeyFile}"
+        ${lib.getExe package} up --reset --login-server=https://hs.${config.garden.domain} --auth-key=file:${authKeyFile}
       fi
     '';
   };
