@@ -2,6 +2,7 @@
   # common miscellaneous tools
   # TODO: sort these
   home.packages = with pkgs; [
+    launchctl-completion
     file
     jq
     rsync
