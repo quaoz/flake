@@ -50,7 +50,7 @@ in {
           };
 
           oidc = {
-            issuer = config.services.pocket-id.settings.APP_URL;
+            issuer = "https://${config.garden.services.pocket-id.domain}";
             client_id = "0d038043-28cd-426b-909d-7d4e43606f13";
             client_secret_path = secrets.headscale-oidc-secret.path;
             pkce.enabled = true;

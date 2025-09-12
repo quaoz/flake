@@ -26,6 +26,7 @@ in {
       RunAtLoad = true;
     };
 
+    # TODO: can't access `garden.services.headscale.domain`, is there a better way to do this?
     script = let
       statusCommand = "${lib.getExe package} status --json --peers=false | ${lib.getExe pkgs.jq} -r '.BackendState'";
     in ''
@@ -36,7 +37,7 @@ in {
       status=$(${statusCommand})
 
       if [[ "$status" == "NeedsLogin" || "$status" == "NeedsMachineAuth" ]]; then
-        ${lib.getExe package} up --auth-key "$(cat ${authKeyFile})"
+        ${lib.getExe package} up --reset --login-server=https://hs.${config.garden.domain} --auth-key=file:${authKeyFile}"
       fi
     '';
   };

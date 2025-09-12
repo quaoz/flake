@@ -29,11 +29,6 @@
     };
   });
 
-  identity =
-    if isDarwin
-    then "/Users/${username}/.ssh/id_ed25519"
-    else "/home/${username}/.ssh/id_ed25519";
-
   cfg = config.garden.secrets;
 in {
   options.garden.secrets = {
@@ -60,7 +55,8 @@ in {
           hostPubkey = config.garden.pubkey;
           masterIdentities = [
             {
-              inherit pubkey identity;
+              inherit pubkey;
+              identity = "/Users/${username}/.ssh/id_ed25519";
             }
           ];
         };
@@ -71,7 +67,8 @@ in {
             then "${config.garden.persist.location}/etc/ssh/ssh_host_ed25519_key"
             else "/etc/ssh/ssh_host_ed25519_key"
           )
-          identity
+          "/Users/${username}/.ssh/id_ed25519"
+          "/home/${username}/.ssh/id_ed25519"
         ];
 
         # collect secrets

@@ -34,7 +34,13 @@ in {
       authKeyFile = secrets.tailscale-authkey.path;
 
       # advertise servers as exit node
-      extraUpFlags = lib.optionals isServer ["--advertise-exit-node"];
+      extraUpFlags =
+        [
+          "--reset"
+          "--login-server=https://${config.garden.services.headscale.domain}"
+        ]
+        ++ lib.optionals isServer ["--advertise-exit-node"];
+
       useRoutingFeatures =
         if isServer
         then "server"
