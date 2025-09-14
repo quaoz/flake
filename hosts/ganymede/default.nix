@@ -7,9 +7,11 @@
 
     profiles.server.enable = true;
     services = {
+      atuin.enable = true;
       nginx.enable = true;
       headscale.enable = true;
       pocket-id.enable = true;
+      postgresql.enable = true;
     };
 
     persist.enable = true;
