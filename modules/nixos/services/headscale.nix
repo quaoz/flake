@@ -8,13 +8,24 @@
 
   cfg = config.garden.services.headscale;
 in {
-  options.garden.services.headscale = self.lib.mkServiceOpt "headscale" {
-    visibility = "public";
-    port = 3757;
-    host = "0.0.0.0";
-    domain = "hs.${config.garden.domain}";
-    nginxExtraConf = {
-      proxyWebsockets = true;
+  options = {
+    services.headscale.settings.dns.extra_records = self.lib.mkOpt (lib.types.listOf (lib.types.submodule {
+      options = {
+        name = self.lib.mkOpt' lib.types.str "The domain name";
+        type = self.lib.mkOpt' (lib.types.enum ["A" "AAAA"]) "The record type";
+        value = self.lib.mkOpt' lib.types.str "The record value";
+      };
+    })) [] "Extra DNS records";
+
+    garden.services.headscale = self.lib.mkServiceOpt "headscale" {
+      visibility = "public";
+      dependsAnywhere = ["pocket-id"];
+      port = 3757;
+      host = "0.0.0.0";
+      domain = "hs.${config.garden.domain}";
+      nginxExtraConf = {
+        proxyWebsockets = true;
+      };
     };
   };
 
@@ -45,8 +56,9 @@ in {
           server_url = "https://${cfg.domain}";
 
           dns = {
-            base_domain = "internal.${config.garden.domain}";
             nameservers.global = ["9.9.9.9"];
+            base_domain = config.garden.magic.internal.domain;
+            search_domains = [config.garden.magic.internal.domain];
           };
 
           oidc = {
