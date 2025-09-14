@@ -3,9 +3,9 @@
   config,
   ...
 }: let
-  cfg = config.garden.system.networking.wireless;
+  cfg = config.garden.networking.wireless;
 in {
-  options.garden.system.networking.wireless.enable =
+  options.garden.networking.wireless.enable =
     lib.mkEnableOption "Wireless networking"
     // {
       default = true;

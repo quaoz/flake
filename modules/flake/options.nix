@@ -43,10 +43,8 @@ in {
       # services, see: modules/{nixos,darwin}/services
       services = {};
 
-      system = {
-        # networking configuration, see: modules/nixos/networking
-        networking = {};
-      };
+      # networking configuration, see: modules/nixos/networking
+      networking = {};
     };
   };
 

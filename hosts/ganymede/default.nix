@@ -1,30 +1,11 @@
-{config, ...}: let
-  ipv4 = "185.55.243.32";
-  ipv6 = "2a00:1911:0001:5d6b:a1c9:9c2d:f38d:b80e";
-in {
+{config, ...}: {
+  programs.dconf.enable = true;
+  boot.initrd.availableKernelModules = ["uhci_hcd"];
+
   garden = {
     pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPyzvtWP5s8yxGRVPSjcE+RiBVXMHV9+iPPxH/kDZPo/";
 
     profiles.server.enable = true;
-
-    proxy = {
-      enable = true;
-      domains."${config.garden.domain}" = {
-        registrar = "namecheap";
-        dnsProvider = "cloudflare";
-
-        ipv4 = {
-          enable = true;
-          address = ipv4;
-        };
-
-        ipv6 = {
-          enable = true;
-          address = ipv6;
-        };
-      };
-    };
-
     services = {
       nginx.enable = true;
       headscale.enable = true;
@@ -32,41 +13,63 @@ in {
     };
 
     persist.enable = true;
-
-    system = {
-      boot.loader = "grub";
-      networking.wireless.enable = false;
-    };
+    system.boot.loader = "grub";
 
     hardware = {
       cpu = "intel";
+      virtualisation.qemu.enable = true;
 
       disks = {
         enable = true;
         device = "/dev/vda";
         impermanence.enable = true;
       };
+    };
 
-      virtualisation.qemu = {
-        enable = true;
+    magic.public = {
+      enable = true;
+      domains."${config.garden.domain}" = {
+        registrar = "namecheap";
+        dnsProvider = "cloudflare";
       };
     };
-  };
 
-  programs.dconf.enable = true;
+    networking = {
+      wireless.enable = false;
 
-  boot.initrd.availableKernelModules = ["uhci_hcd"];
+      addresses = {
+        public = {
+          configure = true;
+          device = "ens18";
 
-  systemd.network.networks."10-eth" = {
-    matchConfig.Name = "ens18";
-    address = [
-      "${ipv4}/24"
-      "${ipv6}/48"
-    ];
-    routes = [
-      {Gateway = "185.55.243.1";}
-      {Gateway = "2a00:1911:1::1";}
-    ];
-    linkConfig.RequiredForOnline = "routable";
+          ipv4 = {
+            enable = true;
+            prefix = "24";
+            address = "185.55.243.32";
+            gateway = "185.55.243.1";
+          };
+
+          # TODO: figure out why it hates ipv6
+          ipv6 = {
+            enable = false;
+            prefix = "48";
+            address = "2a00:1911:0001:5d6b:a1c9:9c2d:f38d:b80e";
+            gateway = "2a00:1911:1::1";
+          };
+        };
+
+        internal = {
+          ipv4 = {
+            enable = true;
+            address = "100.64.0.2";
+          };
+
+          ipv6 = {
+            enable = false;
+            address = "fd7a:115c:a1e0::2";
+          };
+        };
+      };
+    };
   };
 }
