@@ -13,7 +13,6 @@
 in {
   options.garden.services.remote-builder = self.lib.mkServiceOpt "remote-builder" {
     enable = config.garden.profiles.server.enable && !config.garden.profiles.slow.enable;
-    extraConfig.pubkey = self.lib.mkOpt lib.types.str builder-key "The remote builders pubkey";
   };
 
   config = lib.mkIf cfg.enable {
@@ -32,7 +31,7 @@ in {
       hashedPasswordFile = secrets.remote-builder-password.path;
 
       group = "nix-remote";
-      openssh.authorizedKeys.keys = [cfg.pubkey];
+      openssh.authorizedKeys.keys = [builder-key];
     };
 
     users.groups.nix-remote = {};

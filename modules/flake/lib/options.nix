@@ -104,21 +104,27 @@
   mkServiceOpt = name: {
     enable ? false,
     visibility ? "local",
+    dependsLocal ? [],
+    dependsAnywhere ? [],
     port ? null,
-    host ? "127.0.0.1",
+    host ? null,
     domain ? null,
-    extraConfig ? {},
     nginxExtraConf ? {},
   }: let
     inherit (lib) types;
-  in
-    {
-      enable = lib.mkEnableOption "${name}" // {default = enable;};
-      visibility = mkOpt (types.enum ["local" "private" "public"]) visibility "The visibility of the ${name} service";
-      port = mkOpt (types.nullOr types.int) port "The port for the ${name} service";
-      host = mkOpt types.str host "The host for ${name} service";
-      domain = mkOpt (types.nullOr types.str) domain "Domain for the ${name} service";
-      nginxExtraConf = mkOpt types.attrs nginxExtraConf "Extra config merged with `services.nginx.virtualHosts.\"${domain}\".locations.\"/\"`";
-    }
-    // extraConfig;
+  in {
+    enable = lib.mkEnableOption "${name}" // {default = enable;};
+    visibility = mkOpt (types.enum ["local" "internal" "public"]) visibility "The visibility of the ${name} service";
+
+    depends = {
+      local = mkOpt (types.listOf types.str) dependsLocal "List of local services which ${name} depends on";
+      anywhere = mkOpt (types.listOf types.str) dependsAnywhere "List of services running on any host which ${name} depends on";
+    };
+
+    port = mkOpt (types.nullOr types.int) port "The port for the ${name} service";
+    host = mkOpt types.str host "The host for ${name} service";
+
+    domain = mkOpt (types.nullOr types.str) domain "Domain for the ${name} service";
+    nginxExtraConf = mkOpt types.attrs nginxExtraConf "Extra config merged with `services.nginx.virtualHosts.\"${domain}\".locations.\"/\"`";
+  };
 }
