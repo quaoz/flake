@@ -46,6 +46,12 @@ in {
       ];
     };
 
+    # wait for pocket-id to start
+    systemd.services.headscale = lib.mkIf config.garden.services.pocket-id.enable {
+      after = ["pocket-id.service"];
+      wants = ["pocket-id.service"];
+    };
+
     services = {
       headscale = {
         enable = true;
