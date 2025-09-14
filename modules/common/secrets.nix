@@ -44,6 +44,8 @@ in {
       "ssh/github-pub.age"
       "ssh/nix-remote-builder.age"
       "ssh/nix-remote-builder-pub.age"
+      "services/atuin/password.age"
+      "services/atuin/key.age"
     ];
 
     age =
