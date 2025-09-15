@@ -22,17 +22,19 @@ in {
   systemd.network = {
     enable = true;
 
-    networks."10-${cfg.device}" = lib.mkIf cfg.configure {
-      matchConfig.Name = "${cfg.device}";
-      address = builtins.concatLists [
-        (lib.optionals cfg.ipv4.enable ["${cfg.ipv4.address}/${cfg.ipv4.prefix}"])
-        (lib.optionals cfg.ipv6.enable ["${cfg.ipv6.address}/${cfg.ipv6.prefix}"])
-      ];
-      routes = [
-        (lib.mkIf cfg.ipv4.enable {Gateway = cfg.ipv4.gateway;})
-        (lib.mkIf cfg.ipv6.enable {Gateway = cfg.ipv4.gateway;})
-      ];
-      linkConfig.RequiredForOnline = "routable";
+    networks = lib.mkIf cfg.configure {
+      "10-${cfg.device}" = {
+        matchConfig.Name = "${cfg.device}";
+        address = builtins.concatLists [
+          (lib.optionals cfg.ipv4.enable ["${cfg.ipv4.address}/${cfg.ipv4.prefix}"])
+          (lib.optionals cfg.ipv6.enable ["${cfg.ipv6.address}/${cfg.ipv6.prefix}"])
+        ];
+        routes = [
+          (lib.mkIf cfg.ipv4.enable {Gateway = cfg.ipv4.gateway;})
+          (lib.mkIf cfg.ipv6.enable {Gateway = cfg.ipv4.gateway;})
+        ];
+        linkConfig.RequiredForOnline = "routable";
+      };
     };
   };
 
