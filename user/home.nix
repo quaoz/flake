@@ -1,5 +1,8 @@
-{
+{osConfig, ...}: {
   programs.home-manager.enable = true;
 
-  home.stateVersion = "23.11";
+  home = {
+    homeDirectory = osConfig.users.users.${osConfig.me.username}.home;
+    stateVersion = "23.11";
+  };
 }

@@ -1,6 +1,7 @@
 {lib, ...}: let
   inherit (import ./lib/imports.nix {inherit lib;}) harvest nixFiles;
 in {
+  # TODO: cleanup lib
   flake.lib = harvest {inherit lib;} ./lib;
 
   imports =

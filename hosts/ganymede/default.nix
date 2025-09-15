@@ -7,6 +7,8 @@
 
     profiles.server.enable = true;
     services = {
+      unbound.enable = true;
+      blocky.enable = true;
       atuin.enable = true;
       nginx.enable = true;
       headscale.enable = true;
