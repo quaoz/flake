@@ -4,7 +4,7 @@
   config,
   ...
 }: let
-  inherit (config.home) homeDir;
+  inherit (config.home) homeDirectory;
   inherit (config.programs) zed-editor;
 in {
   home.sessionVariables = {
@@ -13,7 +13,7 @@ in {
       then "${lib.getExe zed-editor.package} --wait --new"
       else "${lib.getExe pkgs.vim}";
 
-    FLAKE = "${homeDir}/.config/flake";
-    NH_FLAKE = "${homeDir}/.config/flake";
+    FLAKE = "${homeDirectory}/.config/flake";
+    NH_FLAKE = "${homeDirectory}/.config/flake";
   };
 }

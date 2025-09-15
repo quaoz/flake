@@ -5,7 +5,7 @@
   pkgs,
   ...
 }: let
-  inherit (config.home) homeDir;
+  inherit (config.home) homeDirectory;
 in {
   # password manager
   home = lib.mkIf osConfig.garden.profiles.desktop.enable {
@@ -20,7 +20,7 @@ in {
       #       maybe figure out something else or just remove password requirement
       #       for wheel
       # use bitwarden ssh-agent
-      SSH_AUTH_SOCK = "${homeDir}/.bitwarden-ssh-agent.sock";
+      SSH_AUTH_SOCK = "${homeDirectory}/.bitwarden-ssh-agent.sock";
     };
   };
 }
