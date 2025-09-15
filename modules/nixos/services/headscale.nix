@@ -69,11 +69,11 @@ in {
             nameservers.global =
               self.lib.hostsWhere self (_: hc: hc.config.garden.services.blocky.enable) {}
               |> lib.mapAttrsToList (_: hc: let
-                inherit (hc.config.garden.networking.addresses) public;
+                inherit (hc.config.garden.networking.addresses) internal;
               in
                 builtins.concatLists [
-                  (lib.optionals public.ipv4.enable [public.ipv4.address])
-                  (lib.optionals public.ipv6.enable [public.ipv6.address])
+                  (lib.optionals internal.ipv4.enable [internal.ipv4.address])
+                  (lib.optionals internal.ipv6.enable [internal.ipv6.address])
                 ])
               |> builtins.concatLists;
 
