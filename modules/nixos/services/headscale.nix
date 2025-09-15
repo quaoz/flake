@@ -19,7 +19,7 @@ in {
 
     garden.services.headscale = self.lib.mkServiceOpt "headscale" {
       visibility = "public";
-      dependsAnywhere = ["pocket-id"];
+      dependsAnywhere = ["blocky" "pocket-id"];
       port = 3757;
       host = "0.0.0.0";
       domain = "hs.${config.garden.domain}";
@@ -66,7 +66,17 @@ in {
           server_url = "https://${cfg.domain}";
 
           dns = {
-            nameservers.global = ["9.9.9.9"];
+            nameservers.global =
+              self.lib.hostsWhere self (_: hc: hc.config.garden.services.blocky.enable) {}
+              |> lib.mapAttrsToList (_: hc: let
+                inherit (hc.config.garden.networking.addresses) public;
+              in
+                builtins.concatLists [
+                  (lib.optionals public.ipv4.enable [public.ipv4.address])
+                  (lib.optionals public.ipv6.enable [public.ipv6.address])
+                ])
+              |> builtins.concatLists;
+
             base_domain = config.garden.magic.internal.domain;
             search_domains = [config.garden.magic.internal.domain];
           };
