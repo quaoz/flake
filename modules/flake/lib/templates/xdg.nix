@@ -17,8 +17,6 @@ in {
         XDG_BIN_HOME
         XDG_RUNTIME_DIR
         ;
-
-      PATH = ["$bin"];
     };
   };
 }
