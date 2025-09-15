@@ -109,6 +109,7 @@
     port ? null,
     host ? null,
     domain ? null,
+    location ? "/",
     nginxExtraConf ? {},
   }: let
     inherit (lib) types;
@@ -125,6 +126,7 @@
     host = mkOpt types.str host "The host for ${name} service";
 
     domain = mkOpt (types.nullOr types.str) domain "Domain for the ${name} service";
-    nginxExtraConf = mkOpt types.attrs nginxExtraConf "Extra config merged with `services.nginx.virtualHosts.\"${domain}\".locations.\"/\"`";
+    location = mkOpt types.str location "The location to make ${name} avaliable at";
+    nginxExtraConf = mkOpt types.attrs nginxExtraConf "Extra config merged with `services.nginx.virtualHosts.\"${domain}\".locations.${location}`";
   };
 }

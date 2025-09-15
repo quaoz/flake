@@ -29,6 +29,10 @@ in {
     };
   };
 
+  imports = [
+    (lib.mkAliasOptionModule ["garden" "services" "headscale" "prefixes"] ["services" "headscale" "settings" "prefixes"])
+  ];
+
   config = lib.mkIf cfg.enable {
     garden = {
       persist.dirs = [

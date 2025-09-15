@@ -13,7 +13,7 @@ in {
       |> self.lib.services "public" (builtins.attrNames cfg.domains)
       |> builtins.map (service: {
         "${service.domain}" = {
-          locations."/" =
+          locations.${service.location} =
             {
               proxyPass = "http://${service.hostName}:${builtins.toString service.port}";
             }

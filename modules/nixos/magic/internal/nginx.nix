@@ -4,7 +4,6 @@
   config,
   ...
 }: let
-  inherit (config.garden.networking.addresses) internal;
   cfg = config.garden.magic.internal;
 in {
   # setup nginx for services running on this host
@@ -13,17 +12,18 @@ in {
       self.lib.services "internal" [cfg.domain] {self = {inherit config;};}
       |> builtins.map (sc: {
         "${sc.domain}" = {
-          locations."/" =
+          locations.${sc.location} =
             {
               proxyPass = "http://127.0.0.1:${builtins.toString sc.port}";
             }
             // sc.nginxExtraConf;
 
-          # only listen on tailscale addresses
-          listenAddresses = builtins.concatLists [
-            (lib.optionals internal.ipv4.enable [internal.ipv4.address])
-            (lib.optionals internal.ipv6.enable [internal.ipv6.address])
-          ];
+          # only allow access from tailnet
+          extraConfig = ''
+            allow ${config.garden.services.headscale.prefixes.ipv4};
+            allow ${config.garden.services.headscale.prefixes.ipv6};
+            deny all;
+          '';
         };
       })
       |> self.lib.safeMerge;
