@@ -20,8 +20,8 @@ in {
 
           # only allow access from tailnet
           extraConfig = ''
-            allow ${config.garden.services.headscale.prefixes.ipv4};
-            allow ${config.garden.services.headscale.prefixes.ipv6};
+            allow ${config.garden.services.headscale.prefixes.v4};
+            allow ${config.garden.services.headscale.prefixes.v6};
             deny all;
           '';
         };
