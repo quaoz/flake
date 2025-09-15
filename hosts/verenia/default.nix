@@ -20,7 +20,9 @@
     pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICMOxWr7LsWITmXfclK0QVvYboKsZFYHKoFmvRHVtZWg";
 
     profiles.server.enable = true;
-    services = {};
+    services = {
+      nginx.enable = true;
+    };
 
     system.boot.loader = "systemd-boot";
 
