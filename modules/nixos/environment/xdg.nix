@@ -1,5 +1,5 @@
 {self, ...}: let
-  template = self.lib.template.xdg;
+  template = self.lib.templates.xdg;
 in {
   environment = {
     variables = template.global;
