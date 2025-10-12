@@ -12,11 +12,21 @@ in {
 
   services.tailscale = {
     enable = true;
+    overrideLocalDns = true;
   };
 
-  environment.systemPackages = [
-    package
-  ];
+  environment.etc = {
+    "resolver/ts.net".enable = lib.mkForce false;
+    
+    # ensuer magic dns always works
+    "resolver/internal.${config.garden.domain}".text = "nameserver 100.100.100.100";
+    
+    # add fallback nameserver for headscale
+    "resolver/hs.${config.garden.domain}".text = ''
+      nameserver 100.100.100.100
+      nameserver 1.1.1.1
+    '';
+  };
 
   # automatically authorise machine
   # https://github.com/NixOS/nixpkgs/blob/33e1f9420067659c188dc8a34b8ec2110d28f8c0/nixos/modules/services/networking/tailscale.nix#L172-L200
