@@ -1,12 +1,10 @@
 {
-  pkgs,
   lib,
   osConfig,
   ...
 }: {
   # discord client
-  home.packages = with pkgs;
-    lib.optionals osConfig.garden.profiles.desktop.enable [
-      vesktop
-    ];
+  programs.vesktop = lib.mkIf osConfig.garden.profiles.desktop.enable {
+    enable = true;
+  };
 }
