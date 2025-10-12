@@ -53,9 +53,8 @@
             gateway = "185.55.243.1";
           };
 
-          # TODO: figure out why it hates ipv6
           ipv6 = {
-            enable = false;
+            enable = true;
             prefix = "48";
             address = "2a00:1911:0001:5d6b:a1c9:9c2d:f38d:b80e";
             gateway = "2a00:1911:1::1";
@@ -69,7 +68,7 @@
           };
 
           ipv6 = {
-            enable = false;
+            enable = true;
             address = "fd7a:115c:a1e0::2";
           };
         };

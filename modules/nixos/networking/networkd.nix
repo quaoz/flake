@@ -31,7 +31,7 @@ in {
         ];
         routes = [
           (lib.mkIf cfg.ipv4.enable {Gateway = cfg.ipv4.gateway;})
-          (lib.mkIf cfg.ipv6.enable {Gateway = cfg.ipv4.gateway;})
+          (lib.mkIf cfg.ipv6.enable {Gateway = cfg.ipv6.gateway;})
         ];
         linkConfig.RequiredForOnline = "routable";
       };
