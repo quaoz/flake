@@ -5,7 +5,7 @@
   config,
   ...
 }: let
-  inherit (lib.types) pathWith listOf str submodule;
+  inherit (lib.types) pathWith listOf str submodule enum attrsOf bool;
   inherit (config.networking) hostName;
   inherit (config.me) username pubkey;
   inherit (self.lib) mkOpt mkOpt';
@@ -26,6 +26,15 @@
       path = mkOpt' relativePath "The secrets path relative to `secretsDir`";
       user = mkOpt' str "The secret owner";
       group = mkOpt' str "The secrets group";
+      shared = mkOpt bool false "Whether the secret has multipul owners";
+    };
+  });
+
+  generatedSecret = attrsOf (submodule {
+    options = {
+      type = mkOpt' (enum (builtins.attrNames config.age.generators)) "The secrets type";
+      user = mkOpt' str "The secret owner";
+      group = mkOpt' str "The secrets group";
     };
   });
 
@@ -36,6 +45,7 @@ in {
     root = mkOpt (listOf relativePath) [] "Paths of secrets owned by root relative to `secretsDir`";
     user = mkOpt (listOf relativePath) [] "Paths of secrets owned by ${username} relative to `secretsDir`";
     other = mkOpt otherSecret [] "Secrets not owned by root or ${username}";
+    gen = mkOpt generatedSecret {} "Secrets which are generated";
   };
 
   config = {
@@ -52,7 +62,9 @@ in {
       {
         rekey = {
           storageMode = "local";
+
           localStorageDir = cfg.secretsDir + "/.rekeyed/${hostName}";
+          generatedSecretsDir = cfg.secretsDir + "/.generated/";
 
           hostPubkey = config.garden.pubkey;
           masterIdentities = [
@@ -77,10 +89,13 @@ in {
         secrets = let
           mkSecret = path: owner: group: let
             name =
-              lib.removeSuffix ".age" path
-              |> lib.path.subpath.components
-              |> self.lib.sliceFrom (-2)
-              |> builtins.concatStringsSep "-";
+              (
+                lib.removeSuffix ".age" path
+                |> lib.path.subpath.components
+                |> self.lib.sliceFrom (-2)
+                |> builtins.concatStringsSep "-"
+              )
+              + (lib.optionalString shared "-${owner}");
           in {
             "${name}" = {
               inherit owner group;
@@ -92,9 +107,21 @@ in {
           usergroup = self.lib.ldTernary pkgs "wheel" "admin";
         in
           builtins.concatLists [
-            (cfg.root |> builtins.map (s: mkSecret s "root" rootgroup))
-            (cfg.user |> builtins.map (s: mkSecret s username usergroup))
-            (cfg.other |> builtins.map (s: mkSecret s.path s.user s.group))
+            (cfg.root |> builtins.map (s: mkSecret s "root" rootgroup {}))
+            (cfg.user |> builtins.map (s: mkSecret s username usergroup {}))
+            (cfg.other |> builtins.map (s: mkSecret s.path s.user s.group {inherit (s) shared;}))
+            [
+              (builtins.mapAttrs (
+                  _: s: {
+                    inherit (s) group;
+                    owner = s.user;
+                    generator = {
+                      script = s.type;
+                    };
+                  }
+                )
+                cfg.gen)
+            ]
           ]
           |> self.lib.safeMerge;
       }
