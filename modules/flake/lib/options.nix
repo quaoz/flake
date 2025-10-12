@@ -128,7 +128,15 @@
     host = mkOpt types.str host "The host for ${name} service";
 
     domain = mkOpt (types.nullOr types.str) domain "Domain for the ${name} service";
-    location = mkOpt types.str location "The location to make ${name} avaliable at";
+    location = mkOpt types.str location "The location to make ${name} available at";
     nginxExtraConf = mkOpt types.attrs nginxExtraConf "Extra config merged with `services.nginx.virtualHosts.\"${domain}\".locations.${location}`";
+  };
+
+  mkMonitorOpt = name: {
+    enable,
+    port,
+  }: {
+    enable = lib.mkEnableOption "${name} monitoring" // {default = enable;};
+    port = mkOpt lib.types.int port "The port for ${name} metrics";
   };
 }

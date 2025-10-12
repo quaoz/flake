@@ -18,6 +18,8 @@ in {
         server.enable = mkEnableOption "the server profile";
         desktop.enable = mkEnableOption "the desktop profile";
 
+        monitoring.enable = mkEnableOption "the monitoring profile";
+
         # this doesn't do anything except flag that this host is an iso so it
         # can be ignored when configuring things like build machines
         iso.enable = mkEnableOption "the iso profile";
@@ -31,11 +33,14 @@ in {
       # hardware configuration, see: modules/nixos/hardware
       hardware = {};
 
+      # automatic service proxying, see: modules/nixos/magic
+      magic = {};
+
+      # service monitoring, see: modules/nixos/monitoring
+      monitoring = {};
+
       # persistence, see: modukes/nixos/system/persist
       persist = {};
-
-      # automatic service proxying, see: modules/nixos/services/proxy
-      proxy = {};
 
       # thin wrapper over agenix, see: modules/common/secrets
       secrets = {};
