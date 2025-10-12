@@ -32,7 +32,10 @@ in {
               "wheel"
             ]
             ++ ifGroupsExist [
+              "audio"
               "networkmanager"
+              "systemd-journal"
+              "video"
             ];
         };
       };
