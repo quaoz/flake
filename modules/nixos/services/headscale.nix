@@ -20,7 +20,7 @@ in {
     garden.services.headscale = self.lib.mkServiceOpt "headscale" {
       visibility = "public";
       dependsAnywhere = ["blocky" "pocket-id"];
-      port = 3757;
+      port = 4001;
       host = "0.0.0.0";
       domain = "hs.${config.garden.domain}";
       nginxExtraConf = {
@@ -34,29 +34,35 @@ in {
   ];
 
   config = lib.mkIf cfg.enable {
-    garden = {
-      persist.dirs = [
-        {
-          inherit (config.services.headscale) user group;
-          directory = "/var/lib/headscale";
-        }
-      ];
+    garden.persist.dirs = [
+      {
+        inherit (config.services.headscale) user group;
+        directory = "/var/lib/headscale";
+      }
+    ];
 
-      secrets.other = [
-        {
-          inherit (config.services.headscale) user group;
-          path = "services/headscale/oidc-secret.age";
-        }
+    # wait for pocket-id and blocky to start
+    systemd.services.headscale = let
+      services = builtins.concatLists [
+        (lib.optionals config.garden.services.pocket-id.enable ["pocket-id.service"])
+        (lib.optionals config.garden.services.blocky.enable ["blocky.service"])
       ];
-    };
-
-    # wait for pocket-id to start
-    systemd.services.headscale = lib.mkIf config.garden.services.pocket-id.enable {
-      after = ["pocket-id.service"];
-      wants = ["pocket-id.service"];
+    in {
+      after = services;
+      wants = services;
     };
 
     services = {
+      pocket-id.oidc-clients.headscale = {
+        launchURL = "https://${cfg.domain}";
+        callbackURLs = ["https://${cfg.domain}/oidc/callback"];
+        pkceEnabled = true;
+
+        secret = {
+          inherit (config.services.headscale) user group;
+        };
+      };
+
       headscale = {
         enable = true;
         address = cfg.host;
@@ -70,20 +76,20 @@ in {
               self.lib.hostsWhere self (_: hc: hc.config.garden.services.blocky.enable) {}
               |> lib.mapAttrsToList (_: hc: let
                 inherit (hc.config.garden.networking.addresses) internal;
-              in
-                builtins.concatLists [
-                  (lib.optionals internal.ipv4.enable [internal.ipv4.address])
-                  (lib.optionals internal.ipv6.enable [internal.ipv6.address])
-                ])
-              |> builtins.concatLists;
+              in [
+                (lib.optionals internal.ipv4.enable [internal.ipv4.address])
+                (lib.optionals internal.ipv6.enable [internal.ipv6.address])
+              ])
+              |> lib.flatten;
 
             base_domain = config.garden.magic.internal.domain;
             search_domains = [config.garden.magic.internal.domain];
           };
 
+          # https://pocket-id.org/docs/client-examples/headscale
           oidc = {
             issuer = "https://${config.garden.services.pocket-id.domain}";
-            client_id = "0d038043-28cd-426b-909d-7d4e43606f13";
+            client_id = config.services.pocket-id.oidc-clients.headscale.id;
             client_secret_path = secrets.headscale-oidc-secret.path;
             pkce.enabled = true;
             only_start_if_oidc_is_available = true;

@@ -12,7 +12,7 @@
 in {
   options.garden.services.pocket-id = self.lib.mkServiceOpt "pocket-id" {
     visibility = "public";
-    port = 1411;
+    port = 4002;
     host = "0.0.0.0";
     domain = "id.${domain}";
     nginxExtraConf = {
@@ -25,26 +25,31 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    garden.secrets.other = [
-      {
+    garden.secrets = {
+      gen.pocket-id-encryption-key = {
         inherit user group;
-        path = "services/pocket-id/encryption-key.age";
-      }
-      {
-        inherit user group;
-        path = "services/pocket-id/maxmind-api.age";
-      }
-    ];
+        type = "base64";
+      };
+
+      other = [
+        {
+          inherit user group;
+          path = "api/maxmind.age";
+          shared = true;
+        }
+      ];
+    };
 
     garden.persist.dirs = [
       {
-        inherit (config.services.pocket-id) user group;
+        inherit user group;
         directory = config.services.pocket-id.dataDir;
       }
     ];
 
     services.pocket-id = {
       enable = true;
+      purgeClients = true;
 
       # https://pocket-id.org/docs/configuration/environment-variables
       settings = {
@@ -57,10 +62,12 @@ in {
 
         TRUST_PROXY = true;
         ANALYTICS_DISABLED = true;
+
+        UI_CONFIG_DISABLED = true;
         ALLOW_USER_SIGNUPS = "withToken";
 
         ENCRYPTION_KEY_FILE = secrets.pocket-id-encryption-key.path;
-        MAXMIND_LICENSE_KEY_FILE = secrets.pocket-id-maxmind-api.path;
+        MAXMIND_LICENSE_KEY_FILE = secrets."api-maxmind-${user}".path;
       };
     };
   };

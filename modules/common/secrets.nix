@@ -75,6 +75,34 @@ in {
           ];
         };
 
+        generators = {
+          _oidc-secret = {
+            name,
+            pkgs,
+            deps,
+            decrypt,
+            ...
+          }: let
+            realname = lib.removeSuffix "-oidc-secret" name;
+            id = builtins.hashString "md5" realname;
+            jq = lib.getExe pkgs.jq;
+            xh = lib.getExe pkgs.xh;
+          in ''
+            APIKEY="$(${decrypt} ${lib.escapeShellArg deps.pocket-id-api-key.file})"
+            req() {
+                ${xh} --body --pretty none "$1" "https://id.${config.garden.domain}/api/$2" "x-api-key:$APIKEY" "''${@:3}"
+            }
+
+            client="$(req GET "oidc/clients/${id}" 2>/dev/null)"
+            if [[ "$(${jq} 'has("error")' <<<"$client")" == true ]]; then
+                req POST "oidc/clients" 'name=${realname}' 'id=${id}' &>/dev/null
+            fi
+
+            resp="$(req POST "oidc/clients/${id}/secret")"
+            ${jq} -r '.secret' <<<"$resp"
+          '';
+        };
+
         identityPaths = [
           (
             if !isDarwin && config.garden.persist.enable
@@ -87,7 +115,7 @@ in {
 
         # collect secrets
         secrets = let
-          mkSecret = path: owner: group: let
+          mkSecret = path: owner: group: {shared ? false}: let
             name =
               (
                 lib.removeSuffix ".age" path
@@ -100,6 +128,12 @@ in {
             "${name}" = {
               inherit owner group;
               rekeyFile = cfg.secretsDir + "/${path}";
+            };
+          };
+
+          defaultDeps = {
+            _oidc-secret = {
+              inherit (config.age.secrets) pocket-id-api-key;
             };
           };
 
@@ -117,6 +151,7 @@ in {
                     owner = s.user;
                     generator = {
                       script = s.type;
+                      dependencies = defaultDeps.${s.type} or [];
                     };
                   }
                 )
