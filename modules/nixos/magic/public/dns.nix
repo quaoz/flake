@@ -25,36 +25,39 @@ in {
               defaultTtl = 30;
 
               records =
-                self.lib.hosts self {}
-                |> self.lib.services "public" [domain]
-                |> builtins.map (
-                  service: let
-                    subdomain =
-                      if service.domain == domain
-                      then "@"
-                      else lib.strings.removeSuffix ".${domain}" service.domain;
-                  in [
-                    (
-                      if public.ipv4.enable
-                      then {
-                        inherit (public.ipv4) address;
-                        type = "a";
-                        label = subdomain;
-                      }
-                      else []
-                    )
-                    (
-                      if public.ipv6.enable
-                      then {
-                        inherit (public.ipv6) address;
-                        type = "aaaa";
-                        label = subdomain;
-                      }
-                      else []
-                    )
-                  ]
-                )
-                |> lib.flatten;
+                domainCfg.extraRecords
+                ++ (
+                  self.lib.hosts self {}
+                  |> self.lib.services "public" [domain]
+                  |> builtins.map (
+                    service: let
+                      subdomain =
+                        if service.domain == domain
+                        then "@"
+                        else lib.strings.removeSuffix ".${domain}" service.domain;
+                    in [
+                      (
+                        if public.ipv4.enable
+                        then {
+                          inherit (public.ipv4) address;
+                          type = "a";
+                          label = subdomain;
+                        }
+                        else []
+                      )
+                      (
+                        if public.ipv6.enable
+                        then {
+                          inherit (public.ipv6) address;
+                          type = "aaaa";
+                          label = subdomain;
+                        }
+                        else []
+                      )
+                    ]
+                  )
+                  |> lib.flatten
+                );
             })
             cfg.domains;
         };

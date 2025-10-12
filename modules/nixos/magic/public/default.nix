@@ -10,6 +10,7 @@
     options = {
       registrar = self.lib.mkOpt' lib.types.str "The registrar for ${domain}";
       dnsProvider = self.lib.mkOpt' lib.types.str "The dns provider for ${domain}";
+      extraRecords = self.lib.mkOpt (lib.types.listOf lib.types.attrs) [] "Extra records for ${domain}";
     };
   });
 
