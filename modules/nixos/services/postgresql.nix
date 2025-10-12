@@ -7,7 +7,9 @@
 }: let
   cfg = config.garden.services.postgresql;
 in {
-  options.garden.services.postgresql = self.lib.mkServiceOpt "postgresql" {};
+  options.garden.services.postgresql = self.lib.mkServiceOpt "postgresql" {
+    port = 5432;
+  };
 
   config = lib.mkIf cfg.enable {
     garden.persist.dirs = [
@@ -23,6 +25,10 @@ in {
       enableTCPIP = false;
 
       package = pkgs.postgresql_17;
+
+      settings = {
+        inherit (cfg) port;
+      };
     };
   };
 }
