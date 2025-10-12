@@ -1,5 +1,6 @@
 {
   inputs,
+  inputs',
   pkgs,
   ...
 }: {
@@ -7,11 +8,24 @@
 
   # tools for working with nix
   home.packages = with pkgs; [
+    # formatter
     alejandra
-    nh
+    # language server
     nil
-    nurl
+
+    # cli helper
+    nh
+    # nicer nix output
     nix-output-monitor
+
+    # package creation helpers
+    nurl
+    nix-init
+
+    # lockfile linter
+    inputs'.locker.packages.locker
+    # lockfile viewer
+    nix-melt
   ];
 
   programs.nix-index-database.comma.enable = true;
