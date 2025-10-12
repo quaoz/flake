@@ -10,6 +10,7 @@ in {
     services.nginx.virtualHosts =
       self.lib.hosts self {}
       |> self.lib.services "public" (builtins.attrNames cfg.domains)
+      |> builtins.filter (sc: sc.proxy)
       |> builtins.map (service: {
         "${service.domain}" = {
           locations.${service.location} =

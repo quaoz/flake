@@ -103,6 +103,7 @@
   */
   mkServiceOpt = name: {
     enable ? false,
+    proxy ? true,
     visibility ? "local",
     dependsLocal ? [],
     dependsAnywhere ? [],
@@ -115,6 +116,7 @@
     inherit (lib) types;
   in {
     enable = lib.mkEnableOption "${name}" // {default = enable;};
+    proxy = lib.mkEnableOption "proxy ${name}" // {default = proxy;};
     visibility = mkOpt (types.enum ["local" "internal" "public"]) visibility "The visibility of the ${name} service";
 
     depends = {

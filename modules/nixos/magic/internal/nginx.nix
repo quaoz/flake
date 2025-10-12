@@ -10,6 +10,7 @@ in {
   config = lib.mkIf cfg.enable {
     services.nginx.virtualHosts =
       self.lib.services "internal" [cfg.domain] {self = {inherit config;};}
+      |> builtins.filter (sc: sc.proxy)
       |> builtins.map (sc: {
         "${sc.domain}" = {
           locations.${sc.location} =

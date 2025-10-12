@@ -10,31 +10,42 @@ in {
   options.garden.services.blocky = self.lib.mkServiceOpt "blocky" {
     visibility = "internal";
     dependsLocal = ["unbound"];
-    port = 853;
-    host = "0.0.0.0";
-    location = "/dns-query";
-    domain = "dns.internal.xenia.dog";
+    domain = "${config.networking.hostName}.${config.garden.magic.internal.domain}";
+    proxy = false;
+    port = 53;
+    host = "127.0.0.1";
   };
 
   # if enabled blocky will replace the default dns
   config = lib.mkIf cfg.enable {
-    networking = {
-      # force blocky as nameserver
-      nameservers = lib.mkForce [cfg.host];
-      networkmanager.dns = lib.mkForce "default";
+    # needed for tailscale magic dns to work
+    environment.etc."resolv.conf".text = ''
+      search ${config.garden.magic.internal.domain}
+      nameserver 127.0.0.1
+      nameserver 100.100.100.100
+      options edns0 trust-ad
+    '';
+
+    # wait for unbound to start
+    systemd.services.blocky = {
+      after = ["unbound.service"];
+      wants = ["unbound.service"];
     };
 
+    # disable systemd-resolved
+    networking.networkmanager.dns = lib.mkForce "none";
     services = {
-      # disable systemd-resolved
       resolved.enable = lib.mkForce false;
 
       blocky = {
         enable = true;
 
         settings = {
-          ports = {
-            dns = 53;
-            tls = cfg.port;
+          ports.dns = cfg.port;
+
+          log = {
+            level = "warn";
+            privacy = lib.mkDefault true;
           };
 
           # use unbound as the upstream dns
