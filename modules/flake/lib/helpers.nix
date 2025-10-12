@@ -5,6 +5,14 @@
     list = [];
   };
 
+  # https://github.com/NixOS/nix/issues/10387
+  pow = lib.fix (
+    self: base: power:
+      if power != 0
+      then base * (self base (power - 1))
+      else 1
+  );
+
   /**
   like `lib.recursiveUpdate` but throws an error if an attribute will be overwritten
 
@@ -254,5 +262,5 @@
   isEnabled = config: program:
     builtins.hasAttr program config.programs && config.programs.${program}.enable;
 in {
-  inherit ldTernary isEnabled onlyDarwin onlyLinux safeRecursiveUpdate safeMerge hostsWhere hosts;
+  inherit ldTernary isEnabled onlyDarwin onlyLinux safeRecursiveUpdate safeMerge hostsWhere hosts pow;
 }
