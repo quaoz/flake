@@ -121,6 +121,12 @@
     # simple state management
     preservation.url = "github:nix-community/preservation";
 
+    # mailserver
+    simple-nixos-mailserver = {
+      url = "gitlab:simple-nixos-mailserver/nixos-mailserver";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # theming framework
     stylix = {
       url = "github:nix-community/stylix";

@@ -53,7 +53,10 @@ in {
           upstreams.groups.default = ["${unbound.host}:${unbound.port}"];
 
           # enable prefetching
-          caching.prefetching = true;
+          caching = {
+            prefetching = true;
+            cacheTimeNegative = "60s";
+          };
 
           blocking = {
             loading = {
