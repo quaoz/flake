@@ -79,6 +79,8 @@ in {
       enable = true;
       statusPage = true;
 
+      logError = "/var/log/nginx/error.log";
+
       package = pkgs.nginxQuic;
 
       recommendedTlsSettings = true;
