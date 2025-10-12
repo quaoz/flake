@@ -1,4 +1,9 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  self,
+  ...
+}: {
   # modern replacements for various tools
   home.packages = with pkgs; [
     # cut (and sometimes awk) --> choose
@@ -75,6 +80,10 @@
     # neofetch --> hyfetch
     hyfetch = {
       enable = true;
+      # otherwise tries to read config from `~/Library/Application\ Support/hyfetch.json`
+      package = lib.mkIf pkgs.stdenv.isDarwin (
+        self.lib.addFlags pkgs pkgs.hyfetch "--config-file $XDG_CONFIG_HOME/hyfetch.json"
+      );
 
       settings = {
         auto_detect_light_dark = true;

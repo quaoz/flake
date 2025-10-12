@@ -66,7 +66,7 @@
                 };
               }).outPath;
           in
-            self.lib.addFlags pkgs "typos" "--config ${configFile} --exclude '*.age' --locale en";
+            self.lib.addFlags pkgs pkgs.typos "--config ${configFile} --exclude '*.age' --locale en";
         };
         # keep-sorted end
       };

@@ -26,17 +26,19 @@ let
   => <derivation git-wrapped>
   ```
   */
-  addFlags = pkgs: name: flags: let
-    package = pkgs.${name};
-  in
+  addFlags = pkgs: pkg: flags:
     pkgs.symlinkJoin {
-      inherit (package) name meta;
-      paths = [package];
+      inherit (pkg) name;
+      paths = [pkg];
 
       buildInputs = [pkgs.makeWrapper];
       postBuild = ''
-        wrapProgram $out/bin/${package.meta.mainProgram or package.name} --add-flags "${flags}"
+        wrapProgram $out/bin/${pkg.meta.mainProgram or pkg.name} --add-flags '${flags}'
       '';
+
+      meta = {
+        inherit (pkg.meta) mainProgram;
+      };
     };
 in {
   inherit addFlags;
