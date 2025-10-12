@@ -16,6 +16,7 @@ in {
   config = lib.mkIf (!cfg.enable) {
     garden.monitoring = {
       node.enable = lib.mkForce false;
+      blocky.enable = lib.mkForce false;
       fail2ban.enable = lib.mkForce false;
     };
   };

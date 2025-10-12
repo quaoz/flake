@@ -40,6 +40,7 @@ in {
       blocky = {
         enable = true;
 
+        # https://0xerr0r.github.io/blocky/latest/configuration/
         settings = {
           ports.dns = cfg.port;
 
@@ -51,6 +52,26 @@ in {
           # use unbound as the upstream dns
           bootstrapDns.upstream = "${unbound.host}:${unbound.port}";
           upstreams.groups.default = ["${unbound.host}:${unbound.port}"];
+
+          conditional.mapping = {
+            "${config.garden.magic.internal.domain}" = "100.100.100.100";
+          };
+
+          clientLookup = {
+            upstream = "100.100.100.100";
+            clients =
+              self.lib.hosts self {}
+              |> lib.mapAttrs' (hn: hc: let
+                inherit (hc.config.garden.networking.addresses) internal;
+              in {
+                name = "${hn}.${config.garden.magic.internal.domain}";
+                value = builtins.concatLists [
+                  (lib.optionals internal.ipv4.enable [internal.ipv4.address])
+                  (lib.optionals internal.ipv6.enable [internal.ipv6.address])
+                  (lib.optionals (hn == config.networking.hostName) ["::1" "127.0.0.1"])
+                ];
+              });
+          };
 
           # enable prefetching
           caching = {
