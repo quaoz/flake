@@ -45,6 +45,8 @@
         [
           pkgs.nh
           pkgs.rage
+          # the default darwin `stat` doesn't play nice with agenix generate
+          pkgs.uutils-coreutils-noprefix
 
           config.agenix-rekey.package
           config.treefmt.build.wrapper
