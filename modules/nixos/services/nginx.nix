@@ -6,12 +6,6 @@
   ...
 }: let
   inherit (config.age) secrets;
-
-  acme = {
-    user = "acme";
-    group = "acme";
-  };
-
   cfg = config.garden.services.nginx;
 in {
   # TODO: better support multiple domains?
@@ -39,19 +33,25 @@ in {
 
   config = lib.mkIf cfg.enable {
     users.users.nginx.extraGroups = ["acme"];
-    networking.firewall.allowedTCPPorts = [443];
+    networking.firewall.allowedTCPPorts = [
+      80
+      443
+    ];
 
-    garden = {
+    garden = let
+      user = "acme";
+      group = "acme";
+    in {
       secrets.other = [
         {
-          inherit (acme) user group;
+          inherit user group;
           path = "services/acme/cf-dns-api.age";
         }
       ];
 
       persist.dirs = [
         {
-          inherit (acme) user group;
+          inherit user group;
           directory = "/var/lib/acme";
         }
       ];
