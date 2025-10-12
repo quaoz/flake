@@ -1,19 +1,28 @@
 {
   osConfig,
-  lib,
   config,
+  pkgs,
   ...
 }: let
   inherit (osConfig.age) secrets;
 in {
   config = {
-    garden.oneshots.atuin-login = let
-      atuin = lib.getExe config.programs.atuin.package;
-    in {
-      description = "atuin login";
-      script = ''
-        if ${atuin} status | grep -q "not logged in"; then
-          ${atuin} login --username ${osConfig.me.username} --password "$(cat ${secrets.atuin-password.path})" --key "$(cat ${secrets.atuin-key.path})"
+    garden.oneshots.atuin-login = pkgs.writeShellApplication {
+      name = "atuin-login";
+      meta.description = "atuin login service";
+
+      runtimeInputs = [
+        config.programs.atuin.package
+        pkgs.uutils-coreutils-noprefix
+        pkgs.ripgrep
+      ];
+
+      text = ''
+        if atuin status | rg --fixed-strings 'not logged in' --quiet; then
+            atuin login                                            \
+                --username ${osConfig.me.username}                 \
+                --password "$(cat ${secrets.atuin-password.path})" \
+                --key "$(cat ${secrets.atuin-key.path})"
         fi
       '';
     };

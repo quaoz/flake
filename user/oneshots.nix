@@ -4,27 +4,18 @@
   lib,
   pkgs,
   ...
-}: let
-  oneshotType = lib.types.submodule {
-    options = {
-      description = self.lib.mkOpt' lib.types.str "The script description";
-      script = self.lib.mkOpt' lib.types.str "The script to run";
-    };
-  };
-in {
-  options.garden.oneshots = self.lib.mkOpt (lib.types.attrsOf oneshotType) {} "Simple scripts to run at user login";
+}: {
+  options.garden.oneshots = self.lib.mkOpt (lib.types.attrsOf lib.types.package) {} "Simple scripts to run at user login";
 
   config = {
     systemd.user.services = lib.mkIf pkgs.stdenv.isLinux (
-      builtins.mapAttrs (name: oneshot: let
-        script = pkgs.writeShellScript name oneshot.script;
-      in {
+      builtins.mapAttrs (_: script: {
         Unit = {
-          Description = oneshot.description;
+          Description = script.meta.description;
         };
         Service = {
           Type = "oneshot";
-          ExecStart = "${script}";
+          ExecStart = "${lib.getExe script}";
         };
         Install.WantedBy = ["default.target"];
       })
@@ -32,13 +23,11 @@ in {
     );
 
     launchd.agents = lib.mkIf pkgs.stdenv.isDarwin (
-      builtins.mapAttrs (name: oneshot: let
-        script = pkgs.writeShellScript name oneshot.script;
-      in {
+      builtins.mapAttrs (name: script: {
         enable = true;
         config = {
-          ServiceDescription = oneshot.description;
-          ProgramArguments = ["${script}"];
+          ServiceDescription = script.meta.description;
+          ProgramArguments = ["${lib.getExe script}"];
           KeepAlive = {
             Crashed = true;
             SuccessfulExit = false;
