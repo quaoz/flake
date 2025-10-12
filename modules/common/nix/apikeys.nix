@@ -2,10 +2,10 @@
   inherit (config.age) secrets;
 in {
   config = {
-    garden.secrets.root = ["nix/github-api.age"];
+    garden.secrets.root = ["api/github.age"];
 
     nix.extraOptions = ''
-      !include ${secrets.nix-github-api.path}
+      !include ${secrets.api-github.path}
     '';
   };
 }
