@@ -1,9 +1,21 @@
 {
+  config,
+  self,
+  ...
+}: {
   garden.persist.dirs = ["/var/lib/fail2ban"];
+
+  environment.etc = {
+    "fail2ban/filter.d/nginx-url-probe.conf".text = ''
+      [Definition]
+      failregex = ^<HOST>.*(GET /(wp-|admin|boaform|phpmyadmin|\.env|\.git)|\.(dll|so|cfm|asp)|(\?|&)(=PHPB8B5F2A0-3C92-11d3-A3A9-4C7B08C10000|=PHPE9568F36-D428-11d2-A769-00AA001ACF42|=PHPE9568F35-D428-11d2-A769-00AA001ACF42|=PHPE9568F34-D428-11d2-A769-00AA001ACF42)|\\x[0-9a-zA-Z]{2})
+    '';
+  };
 
   services.fail2ban = {
     enable = true;
-    maxretry = 3;
+    bantime = "1h";
+    maxretry = 2;
     ignoreIP = [
       "127.0.0.0/8"
       "10.0.0.0/8"
@@ -13,18 +25,89 @@
     bantime-increment = {
       enable = true;
 
+      # double ban until 256 hours
+      multipliers =
+        builtins.genList (a: a) 8
+        |> builtins.map (a: builtins.toString (self.lib.pow 2 a))
+        |> builtins.concatStringsSep " ";
+      maxtime = "256h";
+
       # check ip across all jails
       overalljails = true;
 
       # add random value to bantime
-      rndtime = "16m";
-
-      # max out at 1 week
-      maxtime = "168h";
+      rndtime = "1h";
     };
 
     jails = {
-      sshd.settings.mode = "aggressive";
+      sshd.settings = {
+        enabled = config.services.openssh.enable;
+        mode = "aggressive";
+        maxretry = 1;
+      };
+
+      # web
+      nginx-url-probe.settings = {
+        enabled = config.services.nginx.enable;
+        filter = "nginx-url-probe";
+        logpath = "/var/log/nginx/access.log";
+        backend = "auto";
+        findtime = "1h";
+      };
+
+      nginx-bad-request.settings = {
+        enabled = config.services.nginx.enable;
+        logpath = "/var/log/nginx/access.log";
+        backend = "auto";
+        findtime = "1h";
+      };
+
+      nginx-botsearch.settings = {
+        enabled = config.services.nginx.enable;
+        logpath = "/var/log/nginx/error.log";
+        backend = "auto";
+        findtime = "1h";
+      };
+
+      nginx-forbidden.settings = {
+        enabled = config.services.nginx.enable;
+        logpath = "/var/log/nginx/error.log";
+        backend = "auto";
+        findtime = "1h";
+      };
+
+      php-url-fopen.settings = {
+        enabled = config.services.nginx.enable;
+        logpath = "/var/log/nginx/access.log";
+        backend = "auto";
+        maxretry = 1;
+      };
+
+      # mail
+      postfix.settings = {
+        enabled = config.services.postfix.enable;
+        mode = "aggressive";
+        findtime = "6h";
+      };
+
+      postfix-sasl.settings = {
+        enabled = config.services.postfix.enable;
+        findtime = "6h";
+      };
+
+      dovecot.settings = {
+        enabled = config.services.dovecot2.enable;
+        mode = "aggressive";
+        journalmatch = "_SYSTEMD_UNIT=dovecot.service";
+        backend = "%(syslog_backend)s";
+        findtime = "6h";
+      };
+
+      roundcube-auth.settings = {
+        enabled = config.services.roundcube.enable;
+        backend = "%(syslog_backend)s";
+        findtime = "6h";
+      };
     };
   };
 }
