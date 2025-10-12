@@ -1,6 +1,7 @@
 # things this provides:
 #
 #  - pkgs: nixpkgs.legacyPackages.<currentSystem>
+#  - lib: nixpkgs.lib
 #  - pwd: $PWD
 #  - hostname: $HOSTNAME
 #  - self: flake in $PWD
@@ -14,7 +15,7 @@ info: _: prev: let
     then attrs
     else {};
 
-  # if an attrset has an attribute for the current system expose
+  # if an attrset has an attribute for the current system expose it
   collapse = attrs: old: new:
     optionalAttrs (builtins.hasAttr old attrs && builtins.hasAttr currentSystem attrs.${old} && attrs.${old}.${currentSystem} != {}) {
       ${new} = attrs.${old}.${currentSystem};
@@ -36,7 +37,10 @@ in
   (
     builtins.foldl' (a: b: a // b) {} (
       [
-        {inherit pwd hostname;}
+        {
+          inherit (nixpkgs) lib;
+          inherit pwd hostname;
+        }
 
         # expose self if it exists
         (optionalAttrs (self != {}) {inherit self;})
