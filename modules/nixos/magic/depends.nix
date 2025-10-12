@@ -45,7 +45,7 @@ in {
                   `${depName}` is a local service, however `garden.services.${sn}.depends.anywhere`
                   contains `${depName}`. Local services should not be accessed from other hosts.
 
-                  You probably want to specify it as a local dependancy instead.
+                  You probably want to specify it as a local dependency instead.
                 '';
               })
               sc.depends.anywhere

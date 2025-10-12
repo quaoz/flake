@@ -5,15 +5,31 @@
   garden = {
     pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPyzvtWP5s8yxGRVPSjcE+RiBVXMHV9+iPPxH/kDZPo/";
 
+    monitoring.enable = true;
     profiles.server.enable = true;
+
     services = {
-      unbound.enable = true;
-      blocky.enable = true;
-      atuin.enable = true;
       nginx.enable = true;
+      redis.enable = true;
+      postgresql.enable = true;
+
+      geoip.enable = true;
+      grafana.enable = true;
+      prometheus.enable = true;
+
+      atuin.enable = true;
+      blocky.enable = true;
+      unbound.enable = true;
       headscale.enable = true;
       pocket-id.enable = true;
-      postgresql.enable = true;
+
+      automx.enable = true;
+      radicale.enable = true;
+      roundcube.enable = true;
+      mailserver = {
+        enable = true;
+        dns.enable = true;
+      };
     };
 
     persist.enable = true;

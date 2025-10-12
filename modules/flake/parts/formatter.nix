@@ -31,10 +31,7 @@
 
         alejandra.enable = true;
 
-        deadnix = {
-          enable = true;
-          #package = inputs'.deadnix.packages.deadnix // {meta.mainProgram = "deadnix";};
-        };
+        deadnix.enable = true;
 
         just.enable = true;
 
@@ -61,12 +58,21 @@
             configFile =
               ((pkgs.formats.toml {}).generate "typos" {
                 default = {
-                  # don't correct ssh keys
-                  extend-ignore-re = ["ssh-ed25519 [a-zA-Z0-9+/]{68}"];
+                  extend-ignore-re = [
+                    # don't correct ssh keys
+                    "ssh-ed25519 [a-zA-Z0-9+/]{68}"
+                  ];
+
+                  extend-words = builtins.foldl' (acc: word: acc // {${word} = word;}) {} [
+                    "HELO"
+                    "fo"
+                  ];
                 };
+
+                files.extend-exclude = ["*.age"];
               }).outPath;
           in
-            self.lib.addFlags pkgs pkgs.typos "--config ${configFile} --exclude '*.age' --locale en";
+            self.lib.addFlags pkgs pkgs.typos "--config ${configFile}";
         };
         # keep-sorted end
       };

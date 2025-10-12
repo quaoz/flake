@@ -17,14 +17,12 @@ in {
 
   config = lib.mkIf cfg.enable {
     garden = {
-      persist.dirs = builtins.concatLists [
-        [
-          {
-            user = "radicale";
-            group = "radicale";
-            directory = config.services.radicale.settings.storage.filesystem_folder;
-          }
-        ]
+      persist.dirs = [
+        {
+          user = "radicale";
+          group = "radicale";
+          directory = config.services.radicale.settings.storage.filesystem_folder;
+        }
       ];
     };
 

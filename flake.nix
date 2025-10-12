@@ -15,8 +15,11 @@
 
     lix-module = {
       url = "https://git.lix.systems/lix-project/nixos-module/archive/main.tar.gz";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.lix.follows = "lix";
+
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        lix.follows = "lix";
+      };
     };
 
     # better darwin support
@@ -68,13 +71,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # flake lockfile linter
+    # lockfile linter
     locker = {
       url = "github:tgirlcloud/locker";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # unnified formatter
+    # unified formatter
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";

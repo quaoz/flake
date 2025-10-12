@@ -17,10 +17,10 @@ in {
 
   environment.etc = {
     "resolver/ts.net".enable = lib.mkForce false;
-    
+
     # ensuer magic dns always works
     "resolver/internal.${config.garden.domain}".text = "nameserver 100.100.100.100";
-    
+
     # add fallback nameserver for headscale
     "resolver/hs.${config.garden.domain}".text = ''
       nameserver 100.100.100.100

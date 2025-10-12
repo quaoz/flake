@@ -5,16 +5,12 @@
   ...
 }: {
   # discord client
-
-  # TODO: switch to moonlight module and configuration
-  #       https://moonlight-mod.github.io/using/install/#flake
-  home.packages = with pkgs;
-    lib.optionals osConfig.garden.profiles.desktop.enable [
-      (
-        discord.override {
-          withOpenASAR = true;
-          withMoonlight = true;
-        }
-      )
+  config = lib.mkIf osConfig.garden.profiles.desktop.enable {
+    home.packages = [
+      (pkgs.discord.override {
+        withOpenASAR = true;
+        withMoonlight = true;
+      })
     ];
+  };
 }

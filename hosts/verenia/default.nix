@@ -19,9 +19,13 @@
   garden = {
     pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICMOxWr7LsWITmXfclK0QVvYboKsZFYHKoFmvRHVtZWg";
 
+    monitoring.enable = true;
     profiles.server.enable = true;
+
     services = {
       nginx.enable = true;
+
+      geoip.enable = true;
     };
 
     system.boot.loader = "systemd-boot";

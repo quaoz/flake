@@ -71,7 +71,7 @@ in {
         # - https://github.com/internetstandards/toolbox-wiki/blob/main/DMARC-how-to.md
         #
         # $ dig +short _dmarc.xenia.dog TXT
-        # > "v=DMARC1; p=reject; adkim=s; aspf=s; rua=mailto:dmarc@xenia.dog; ruf=mailto:dmarc@xenia.dog; fo=1" spellchecker:disable-line
+        # > "v=DMARC1; p=reject; adkim=s; aspf=s; rua=mailto:dmarc@xenia.dog; ruf=mailto:dmarc@xenia.dog; fo=1"
         type = "dmarc_builder";
         parameters = {
           label = "@";

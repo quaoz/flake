@@ -21,7 +21,7 @@ in {
 
     services.prometheus = {
       enable = true;
-      port = cfg.port;
+      inherit (cfg) port;
 
       scrapeConfigs =
         self.lib.hostsWhere self (_: hc: hc.config.garden.monitoring.enable) {}

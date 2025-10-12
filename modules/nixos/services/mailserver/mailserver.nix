@@ -44,15 +44,13 @@ in {
         ]
       ];
 
-      secrets.other = (
-        builtins.map (path: {
+      secrets.other = builtins.map (path: {
           inherit user group path;
         }) [
           "services/mailserver/me.age"
           "services/mailserver/admin.age"
           "services/mailserver/noreply.age"
-        ]
-      );
+        ];
     };
 
     services = {

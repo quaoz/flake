@@ -26,7 +26,7 @@
       path = mkOpt' relativePath "The secrets path relative to `secretsDir`";
       user = mkOpt' str "The secret owner";
       group = mkOpt' str "The secrets group";
-      shared = mkOpt bool false "Whether the secret has multipul owners";
+      shared = mkOpt bool false "Whether the secret has multiple owners";
     };
   });
 

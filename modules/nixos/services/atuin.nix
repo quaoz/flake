@@ -9,9 +9,9 @@ in {
   options.garden.services.atuin = self.lib.mkServiceOpt "atuin" {
     visibility = "internal";
     dependsLocal = ["postgresql"];
-    port = 8888;
+    port = 3001;
     host = "0.0.0.0";
-    domain = "atuin.internal.${config.garden.domain}";
+    domain = "atuin.${config.garden.magic.internal.domain}";
   };
 
   config = lib.mkIf cfg.enable {
