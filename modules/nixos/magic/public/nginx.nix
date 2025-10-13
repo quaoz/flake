@@ -13,7 +13,7 @@ in {
       |> builtins.filter (sc: sc.proxy)
       |> builtins.map (service: {
         "${service.domain}" = {
-          locations.${service.location} =
+          locations."/" =
             {
               proxyPass = "http://${service.hostName}:${builtins.toString service.port}";
             }

@@ -12,7 +12,7 @@
         )
         |> lib.mapAttrsToList (name: sc: {
           inherit (hc.config.networking) hostName;
-          inherit (sc) domain port proxy location nginxExtraConf;
+          inherit (sc) domain port proxy nginxExtraConf;
           inherit name;
         })
     )
