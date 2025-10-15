@@ -22,6 +22,7 @@
       unbound.enable = true;
       headscale.enable = true;
       pocket-id.enable = true;
+      vaultwarden.enable = true;
 
       automx.enable = true;
       radicale.enable = true;

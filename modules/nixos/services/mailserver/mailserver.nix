@@ -44,13 +44,36 @@ in {
         ]
       ];
 
-      secrets.other = builtins.map (path: {
-          inherit user group path;
-        }) [
-          "services/mailserver/me.age"
-          "services/mailserver/admin.age"
-          "services/mailserver/noreply.age"
-        ];
+      secrets = {
+        other =
+          builtins.map (path: {
+            inherit user group path;
+          }) [
+            "services/mailserver/me.age"
+            "services/mailserver/admin.age"
+            "services/mailserver/noreply.age"
+          ];
+
+        normal = {
+          mailserver-vaultwarden-hash = {
+            inherit group;
+            owner = user;
+            generator = {
+              script = "bcrypt";
+              dependencies.input = secrets.mailserver-vaultwarden;
+            };
+          };
+
+          mailserver-pocket-id-hash = {
+            inherit group;
+            owner = user;
+            generator = {
+              script = "bcrypt";
+              dependencies.input = secrets.mailserver-pocket-id;
+            };
+          };
+        };
+      };
     };
 
     services = {
@@ -132,6 +155,25 @@ in {
         "noreply@${baseDomain}" = {
           hashedPasswordFile = secrets.mailserver-noreply.path;
           sendOnly = true;
+          aliases = [
+            "noreply"
+          ];
+        };
+
+        "vaultwarden@${baseDomain}" = {
+          hashedPasswordFile = secrets.mailserver-vaultwarden-hash.path;
+          sendOnly = true;
+          aliases = [
+            "vaultwarden"
+          ];
+        };
+
+        "auth@${baseDomain}" = {
+          hashedPasswordFile = secrets.mailserver-pocket-id-hash.path;
+          sendOnly = true;
+          aliases = [
+            "auth"
+          ];
         };
       };
 

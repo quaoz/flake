@@ -1092,16 +1092,15 @@
         "systems": "systems_7"
       },
       "locked": {
-        "lastModified": 1755465337,
-        "narHash": "sha256-g1fFexvaHiW4qc3XfVaoqoCe2mp1yeaDG4wgaDgcuGM=",
-        "owner": "RobWalt",
+        "lastModified": 1760191612,
+        "narHash": "sha256-ZkwqJ+666DBc3cftfmIrAwCyra+K/k4HkHLRrj4Rxls=",
+        "owner": "oppiliappan",
         "repo": "statix",
-        "rev": "f76adab8920438c39edbf3463b7a7150f9875617",
+        "rev": "8eefaec2e74ff54f6eb541aaeb80aa352ecae884",
         "type": "github"
       },
       "original": {
-        "owner": "RobWalt",
-        "ref": "support-pipe-operator",
+        "owner": "oppiliappan",
         "repo": "statix",
         "type": "github"
       }

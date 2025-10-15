@@ -140,7 +140,7 @@
 
     # TODO: remove once version supporting pipe-operator in nixpkgs (>v0.5.8)
     statix = {
-      url = "github:RobWalt/statix/support-pipe-operator";
+      url = "github:oppiliappan/statix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

@@ -6,9 +6,31 @@
   garden.persist.dirs = ["/var/lib/fail2ban"];
 
   environment.etc = {
-    "fail2ban/filter.d/nginx-url-probe.conf".text = ''
+    "fail2ban/filter.d/nginx-url-probe.local".text = ''
+      [INCLUDES]
+      before = common.conf
+
       [Definition]
-      failregex = ^<HOST>.*(GET /(wp-|admin|boaform|phpmyadmin|\.env|\.git)|\.(dll|so|cfm|asp)|(\?|&)(=PHPB8B5F2A0-3C92-11d3-A3A9-4C7B08C10000|=PHPE9568F36-D428-11d2-A769-00AA001ACF42|=PHPE9568F35-D428-11d2-A769-00AA001ACF42|=PHPE9568F34-D428-11d2-A769-00AA001ACF42)|\\x[0-9a-zA-Z]{2})
+      failregex = ^<HOST>.*(GET /(wp-|admin|boaform|phpmyadmin|\.env|\.git)|\.(dll|so|cfm|asp)|(\?|&)(=PHPB8B5F2A0-3C92-11d3-A3A9-4C7B08C10000|=PHPE9568F36-D428-11d2-A769-00AA001ACF42|=PHPE9568F35-D428-11d2-A769-00AA001ACF42|=PHPE9568F34-D428-11d2-A769-00AA001ACF42)|\\x[0-9a-zA-Z]{2}) [3-5]
+      ignoreregex =
+    '';
+
+    "fail2ban/filter.d/vaultwarden-web.local".text = ''
+      [INCLUDES]
+      before = common.conf
+
+      [Definition]
+      failregex = ^.*?Username or password is incorrect\. Try again\. IP: <ADDR>\. Username:.*$
+      ignoreregex =
+    '';
+
+    "fail2ban/filter.d/vaultwarden-admin.local".text = ''
+      [INCLUDES]
+      before = common.conf
+
+      [Definition]
+      failregex = ^.*Invalid admin token\. IP: <ADDR>.*$
+      ignoreregex =
     '';
   };
 
@@ -46,7 +68,26 @@
         maxretry = 1;
       };
 
-      # web
+      # vaultwarden
+      vaultwarden-web.settings = {
+        enabled = config.garden.services.vaultwarden.enable;
+        filter = "vaultwarden-web";
+        journalmatch = "_SYSTEMD_UNIT=vaultwarden.service";
+        backend = "%(syslog_backend)s";
+        port = "80,443,${config.garden.services.vaultwarden.port}";
+        findtime = "6h";
+      };
+
+      vaultwarden-admin.settings = {
+        enabled = config.garden.services.vaultwarden.enable;
+        filter = "vaultwarden-admin";
+        journalmatch = "_SYSTEMD_UNIT=vaultwarden.service";
+        backend = "%(syslog_backend)s";
+        port = "80,443,${config.garden.services.vaultwarden.port}";
+        findtime = "6h";
+      };
+
+      # nginx
       nginx-url-probe.settings = {
         enabled = config.services.nginx.enable;
         filter = "nginx-url-probe";
