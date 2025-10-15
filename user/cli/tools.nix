@@ -12,5 +12,6 @@
     just
     tokei
     lldb
+    my-scripts
   ];
 }
