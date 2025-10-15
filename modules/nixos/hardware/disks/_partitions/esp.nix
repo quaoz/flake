@@ -22,7 +22,7 @@ in {
     (
       if cfg.partitions.boot.enable
       then {
-        size = cfg.partitions.esp.size;
+        inherit (cfg.partitions.esp) size;
       }
       else {
         start = "1M";
