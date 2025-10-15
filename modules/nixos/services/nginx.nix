@@ -62,6 +62,7 @@ in {
 
       defaults = {
         email = "acme@${cfg.domain}";
+        dnsResolver = "1.1.1.1:53";
 
         dnsProvider = "cloudflare";
         credentialFiles.CF_DNS_API_TOKEN_FILE = secrets.acme-cf-dns-api.path;

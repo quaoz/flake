@@ -4,8 +4,6 @@
   config,
   ...
 }: let
-  inherit (config.age) secrets;
-
   cfg = config.garden.services.headscale;
 in {
   options = {
@@ -87,10 +85,12 @@ in {
           };
 
           # https://pocket-id.org/docs/client-examples/headscale
-          oidc = {
+          oidc = let
+            id = config.services.pocket-id;
+          in {
             issuer = "https://${config.garden.services.pocket-id.domain}";
-            client_id = config.services.pocket-id.oidc-clients.headscale.id;
-            client_secret_path = secrets.headscale-oidc-secret.path;
+            client_id = id.oidc-clients.headscale.id;
+            client_secret_path = id.oidc-clients.headscale.secret.path;
             pkce.enabled = true;
             only_start_if_oidc_is_available = true;
           };

@@ -123,10 +123,9 @@
       anywhere = mkOpt (types.listOf types.str) dependsAnywhere "List of services running on any host which ${name} depends on";
     };
 
+    domain = mkOpt (types.nullOr types.str) domain "Domain for the ${name} service";
     port = mkOpt (types.nullOr types.int) port "The port for the ${name} service";
     host = mkOpt types.str host "The host for ${name} service";
-
-    domain = mkOpt (types.nullOr types.str) domain "Domain for the ${name} service";
     nginxExtraConf = mkOpt types.attrs nginxExtraConf "Extra config merged with `services.nginx.virtualHosts.\"${domain}\".locations.\"/\"`";
   };
 

@@ -1,3 +1,5 @@
+set -euxo pipefail
+
 if [[ $PURGE_CLIENTS == 1 ]]; then
   PURGE_CLIENTS="true"
 fi
@@ -7,11 +9,9 @@ panic() {
   exit 1
 }
 
-req() {
-  xh --body --pretty none "$1" "https://id.xenia.dog/api/$2" "x-api-key:@$APIKEY_FILE" "${@:3}" 2>/dev/null || true
-}
-
-if [[ -z $APIKEY_FILE ]]; then
+if [[ -z $POCKET_ID_DOMAIN ]]; then
+  panic 'POCKET_ID_DOMAIN not specified'
+elif [[ -z $APIKEY_FILE ]]; then
   panic 'APIKEY_FILE not specified'
 elif [[ ! -e $APIKEY_FILE ]]; then
   panic "APIKEY_FILE: '$APIKEY_FILE' does not exist"
@@ -24,6 +24,10 @@ elif [[ ! -e $CLIENTS_FILE ]]; then
 elif [[ ! -r $CLIENTS_FILE ]]; then
   panic "CLIENTS_FILE: '$CLIENTS_FILE' is not readable"
 fi
+
+req() {
+  xh --body --pretty none "$1" "https://$POCKET_ID_DOMAIN/api/$2" "x-api-key:@$APIKEY_FILE" "${@:3}" 2>/dev/null || true
+}
 
 readarray -t clients < <(jq -c '.[]' "$CLIENTS_FILE")
 known=()
@@ -50,7 +54,6 @@ for client in "${clients[@]}"; do
 
     if [[ $needsUpdate == true ]]; then
       # update client if fields didn't match
-      id="$(jq -r '.id' <<<"$rclient")"
       req PUT "oidc/clients/$id" <<<"$client"
       echo "updated oidc client: '$name'"
     fi

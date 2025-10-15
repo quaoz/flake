@@ -25,49 +25,90 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    garden.secrets = {
-      gen.pocket-id-encryption-key = {
-        inherit user group;
-        type = "base64";
+    garden = {
+      secrets = {
+        normal = {
+          mailserver-pocket-id = {
+            inherit group;
+            owner = user;
+            generator.script = "alnum";
+            intermediary = true;
+          };
+
+          pocket-id-encryption-key = {
+            inherit group;
+            owner = user;
+            generator.script = "base64";
+          };
+
+          # SMTP_PASSWORD_FILE doesn't work so do this instead ig??
+          pocket-id-env-file = {
+            inherit group;
+            owner = user;
+
+            generator = {
+              dependencies.mail = secrets.mailserver-pocket-id;
+
+              script = {
+                deps,
+                decrypt,
+                ...
+              }: ''
+                echo "SMTP_PASSWORD='$(${decrypt} ${lib.escapeShellArg deps.mail.file})'"
+              '';
+            };
+          };
+        };
+
+        other = [
+          {
+            inherit user group;
+            path = "api/maxmind.age";
+            shared = true;
+          }
+        ];
       };
 
-      other = [
+      persist.dirs = [
         {
           inherit user group;
-          path = "api/maxmind.age";
-          shared = true;
+          directory = config.services.pocket-id.dataDir;
         }
       ];
     };
-
-    garden.persist.dirs = [
-      {
-        inherit user group;
-        directory = config.services.pocket-id.dataDir;
-      }
-    ];
 
     services.pocket-id = {
       enable = true;
       purgeClients = true;
 
+      environmentFile = secrets.pocket-id-env-file.path;
+
       # https://pocket-id.org/docs/configuration/environment-variables
       settings = {
         APP_URL = "https://${cfg.domain}";
+        TRUST_PROXY = true;
         PORT = cfg.port;
         HOST = cfg.host;
 
         PUID = config.users.users.${user}.uid;
         PGID = config.users.groups.${group}.gid;
 
-        TRUST_PROXY = true;
         ANALYTICS_DISABLED = true;
+
+        ENCRYPTION_KEY_FILE = secrets.pocket-id-encryption-key.path;
+        MAXMIND_LICENSE_KEY_FILE = secrets."api-maxmind-${user}".path;
 
         UI_CONFIG_DISABLED = true;
         ALLOW_USER_SIGNUPS = "withToken";
 
-        ENCRYPTION_KEY_FILE = secrets.pocket-id-encryption-key.path;
-        MAXMIND_LICENSE_KEY_FILE = secrets."api-maxmind-${user}".path;
+        # WATCH: https://github.com/pocket-id/pocket-id/issues/810
+        EMAILS_VERIFIED = true;
+        SMTP_HOST = config.garden.services.mailserver.domain;
+        SMTP_PORT = 465;
+        SMTP_FROM = "auth@${domain}";
+        SMTP_USER = "auth@${domain}";
+        # SMTP_PASSWORD_FILE = secrets.mailserver-pocket-id.path;
+        SMTP_TLS = "tls";
       };
     };
   };

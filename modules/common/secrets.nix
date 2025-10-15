@@ -5,7 +5,8 @@
   config,
   ...
 }: let
-  inherit (lib.types) pathWith listOf str submodule enum attrsOf bool;
+  # TODO: this is lowk a complete mess, might be worth looking into sops or vaultix
+  inherit (lib.types) pathWith listOf str submodule enum attrs attrsOf bool functionTo either;
   inherit (config.networking) hostName;
   inherit (config.me) username pubkey;
   inherit (self.lib) mkOpt mkOpt';
@@ -26,15 +27,7 @@
       path = mkOpt' relativePath "The secrets path relative to `secretsDir`";
       user = mkOpt' str "The secret owner";
       group = mkOpt' str "The secrets group";
-      shared = mkOpt bool false "Whether the secret has multiple owners";
-    };
-  });
-
-  generatedSecret = attrsOf (submodule {
-    options = {
-      type = mkOpt' (enum (builtins.attrNames config.age.generators)) "The secrets type";
-      user = mkOpt' str "The secret owner";
-      group = mkOpt' str "The secrets group";
+      shared = mkOpt bool false "Whether the secret has multiple owners (appends `user` to the name)";
     };
   });
 
@@ -42,11 +35,13 @@
 in {
   options.garden.secrets = {
     secretsDir = mkOpt storePath ../../secrets "Path to dir containing secrets";
+    intermediary = mkOpt (listOf relativePath) [] "Paths of intermediary secrets relative to `secretsDir`";
     root = mkOpt (listOf relativePath) [] "Paths of secrets owned by root relative to `secretsDir`";
     user = mkOpt (listOf relativePath) [] "Paths of secrets owned by ${username} relative to `secretsDir`";
     other = mkOpt otherSecret [] "Secrets not owned by root or ${username}";
-    gen = mkOpt generatedSecret {} "Secrets which are generated";
   };
+
+  imports = [(lib.mkAliasOptionModule ["garden" "secrets" "normal"] ["age" "secrets"])];
 
   config = {
     garden.secrets.user = [
@@ -76,30 +71,13 @@ in {
         };
 
         generators = {
-          _oidc-secret = {
-            name,
+          bcrypt = {
             pkgs,
             deps,
             decrypt,
             ...
-          }: let
-            realname = lib.removeSuffix "-oidc-secret" name;
-            id = builtins.hashString "md5" realname;
-            jq = lib.getExe pkgs.jq;
-            xh = lib.getExe pkgs.xh;
-          in ''
-            APIKEY="$(${decrypt} ${lib.escapeShellArg deps.pocket-id-api-key.file})"
-            req() {
-                ${xh} --body --pretty none "$1" "https://id.${config.garden.domain}/api/$2" "x-api-key:$APIKEY" "''${@:3}"
-            }
-
-            client="$(req GET "oidc/clients/${id}" 2>/dev/null)"
-            if [[ "$(${jq} 'has("error")' <<<"$client")" == true ]]; then
-                req POST "oidc/clients" 'name=${realname}' 'id=${id}' &>/dev/null
-            fi
-
-            resp="$(req POST "oidc/clients/${id}/secret")"
-            ${jq} -r '.secret' <<<"$resp"
+          }: ''
+            ${lib.getExe pkgs.mkpasswd} -sm bcrypt < <(${decrypt} ${lib.escapeShellArg deps.input.file})
           '';
         };
 
@@ -115,7 +93,10 @@ in {
 
         # collect secrets
         secrets = let
-          mkSecret = path: owner: group: {shared ? false}: let
+          mkSecret = path: owner: group: {
+            shared ? false,
+            intermediary ? false,
+          }: let
             name =
               (
                 lib.removeSuffix ".age" path
@@ -126,14 +107,8 @@ in {
               + (lib.optionalString shared "-${owner}");
           in {
             "${name}" = {
-              inherit owner group;
+              inherit owner group intermediary;
               rekeyFile = cfg.secretsDir + "/${path}";
-            };
-          };
-
-          defaultDeps = {
-            _oidc-secret = {
-              inherit (config.age.secrets) pocket-id-api-key;
             };
           };
 
@@ -143,20 +118,8 @@ in {
           builtins.concatLists [
             (cfg.root |> builtins.map (s: mkSecret s "root" rootgroup {}))
             (cfg.user |> builtins.map (s: mkSecret s username usergroup {}))
+            (cfg.intermediary |> builtins.map (s: mkSecret s "root" rootgroup {intermediary = true;}))
             (cfg.other |> builtins.map (s: mkSecret s.path s.user s.group {inherit (s) shared;}))
-            [
-              (builtins.mapAttrs (
-                  _: s: {
-                    inherit (s) group;
-                    owner = s.user;
-                    generator = {
-                      script = s.type;
-                      dependencies = defaultDeps.${s.type} or [];
-                    };
-                  }
-                )
-                cfg.gen)
-            ]
           ]
           |> self.lib.safeMerge;
       }

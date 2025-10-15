@@ -6,6 +6,7 @@
   ...
 }: let
   cfg = config.services.pocket-id;
+  gcfg = config.garden.services.pocket-id;
 
   clientsFile =
     self.lib.hostsWhere self (_: hc: hc.config.services.pocket-id.oidc-clients != {}) {}
@@ -28,15 +29,17 @@
     ];
 
     runtimeEnv = {
-      APIKEY_FILE = config.age.secrets.pocket-id-api-key.path;
+      APIKEY_FILE = secrets.pocket-id-api-key.path;
       CLIENTS_FILE = clientsFile;
       PURGE_CLIENTS = cfg.purgeClients;
+      POCKET_ID_DOMAIN = gcfg.domain;
     };
 
     text = builtins.readFile ./manage.sh;
   };
 
   inherit (self.lib) mkOpt mkOpt';
+  inherit (config.age) secrets;
   inherit (lib) types;
 in {
   options.services.pocket-id = {
@@ -47,7 +50,7 @@ in {
         inherit (config._module.args) name;
       in {
         options = {
-          id = mkOpt types.str (builtins.hashString "md5" name) "The clients name";
+          id = mkOpt types.str (builtins.hashString "md5" name) "The clients id";
 
           launchURL = mkOpt' types.str "URL to open when ${name} is launched";
           callbackURLs = mkOpt (types.listOf types.str) [] "Callback urls for ${name}";
@@ -60,7 +63,12 @@ in {
           secret = {
             user = mkOpt' types.str "The secret owner";
             group = mkOpt' types.str "The secrets group";
+            path = mkOpt' types.path "Path to the oidc secret";
           };
+        };
+
+        config.secret = {
+          inherit (secrets."_oidc-${name}") path;
         };
       })
     )) {} "OIDC clients to provision";
@@ -68,22 +76,53 @@ in {
 
   config = {
     garden.secrets = {
-      gen =
+      normal =
         lib.mapAttrs' (name: clientCfg: {
-          name = "${name}-oidc-secret";
-          value = clientCfg.secret // {type = "_oidc-secret";};
+          name = "_oidc-${name}";
+          value = {
+            inherit (clientCfg.secret) group;
+            owner = clientCfg.secret.user;
+
+            generator = {
+              tags = ["oidc"];
+
+              dependencies.api = secrets.pocket-id-api-key;
+              script = {
+                pkgs,
+                deps,
+                decrypt,
+                ...
+              }: let
+                jq = lib.getExe pkgs.jq;
+                xh = lib.getExe pkgs.xh;
+              in ''
+                APIKEY="$(${decrypt} ${lib.escapeShellArg deps.api.file})"
+                req() {
+                    ${xh} --body --pretty none "$1" "https://${gcfg.domain}/api/$2" "x-api-key:$APIKEY" "''${@:3}"
+                }
+
+                client="$(req GET "oidc/clients/${clientCfg.id}" 2>/dev/null)"
+                if [[ "$(${jq} 'has("error")' <<<"$client")" == true ]]; then
+                    req POST "oidc/clients" 'name=${name}' 'id=${clientCfg.id}' &>/dev/null
+                fi
+
+                resp="$(req POST "oidc/clients/${clientCfg.id}/secret")"
+                ${jq} -r '.secret' <<<"$resp"
+              '';
+            };
+          };
         })
         cfg.oidc-clients;
 
-      other = lib.optionals cfg.enable [
+      other = lib.optionals gcfg.enable [
         {
-          inherit (config.services.pocket-id) user group;
+          inherit (cfg) user group;
           path = "services/pocket-id/api-key.age";
         }
       ];
     };
 
-    systemd.services.pocket-id-manage = lib.mkIf cfg.enable {
+    systemd.services.pocket-id-manage = lib.mkIf gcfg.enable {
       description = "manage pocket-id oidc clients";
 
       wantedBy = ["multi-user.target"];
@@ -92,8 +131,8 @@ in {
       serviceConfig = {
         Type = "oneshot";
         ExecStart = "${lib.getExe script}";
-        User = config.services.pocket-id.user;
-        Group = config.services.pocket-id.group;
+        User = cfg.user;
+        Group = cfg.group;
       };
     };
   };
