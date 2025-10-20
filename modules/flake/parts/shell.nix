@@ -43,6 +43,7 @@
 
       packages =
         [
+          pkgs.attic-client
           pkgs.nh
           pkgs.rage
           # the default darwin `stat` doesn't play nice with agenix generate

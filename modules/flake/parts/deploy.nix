@@ -2,11 +2,8 @@
   inputs,
   config,
   self,
-  lib,
   ...
-}: let
-  inherit (import ../lib/helpers.nix {inherit lib;}) hosts;
-in {
+}: {
   # TODO: darwin deployment?
   # configure flake deployment
   flake = {
@@ -16,7 +13,7 @@ in {
       sshOpts = ["-A"];
 
       nodes =
-        hosts self {}
+        self.lib.hosts self {}
         |> builtins.mapAttrs (hostname: hostconfig: let
           inherit (hostconfig.pkgs.stdenv.hostPlatform) system;
         in {
@@ -28,7 +25,5 @@ in {
           profiles.system.path = inputs.deploy-rs.lib.${system}.activate.${hostconfig.class} hostconfig;
         });
     };
-
-    checks = builtins.mapAttrs (_: deployLib: deployLib.deployChecks self.deploy) inputs.deploy-rs.lib;
   };
 }
