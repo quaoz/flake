@@ -50,8 +50,8 @@ in {
           };
 
           # use unbound as the upstream dns
-          bootstrapDns.upstream = "${unbound.host}:${unbound.port}";
-          upstreams.groups.default = ["${unbound.host}:${unbound.port}"];
+          bootstrapDns.upstream = "${unbound.host}:${builtins.toString unbound.port}";
+          upstreams.groups.default = ["${unbound.host}:${builtins.toString unbound.port}"];
 
           conditional.mapping = {
             "${config.garden.magic.internal.domain}" = "100.100.100.100";

@@ -31,7 +31,7 @@ in {
 
       settings = {
         server = {
-          hosts = ["0.0.0.0:${cfg.port}"];
+          hosts = ["0.0.0.0:${builtins.toString cfg.port}"];
         };
 
         auth = {

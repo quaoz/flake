@@ -5,7 +5,6 @@
   pkgs,
   ...
 }: let
-
   hasMonitor = name:
     self.lib.hostsWhere self (
       _: hc:
@@ -114,7 +113,7 @@ in {
                 name = "prometheus";
                 type = "prometheus";
                 access = "proxy";
-                url = "http://127.0.0.1:${config.garden.services.prometheus.port}";
+                url = "http://127.0.0.1:${builtins.toString config.garden.services.prometheus.port}";
                 orgId = 1;
               }
               (lib.mkIf (hasLocalMonitor "blocky") {

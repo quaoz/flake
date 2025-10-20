@@ -94,7 +94,7 @@
           "cgroups"
 
           # coerce integers into strings
-          "coerce-integers"
+          # "coerce-integers"
 
           # enable fetch-closure builtin
           "fetch-closure"

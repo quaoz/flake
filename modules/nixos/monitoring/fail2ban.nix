@@ -38,7 +38,7 @@ in {
         done
 
         ${lib.getExe pkgs.fail2ban-prometheus-exporter} \
-          --web.listen-address 0.0.0.0:${cfg.port}    \
+          --web.listen-address 0.0.0.0:${builtins.toString cfg.port}    \
           --maxmind.db-path "$geoip"
       '';
 

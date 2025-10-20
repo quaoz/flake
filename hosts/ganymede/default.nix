@@ -17,8 +17,10 @@
       grafana.enable = true;
       prometheus.enable = true;
 
+      attic.enable = true;
       atuin.enable = true;
       blocky.enable = true;
+      buildbot.enable = true;
       unbound.enable = true;
       headscale.enable = true;
       pocket-id.enable = true;

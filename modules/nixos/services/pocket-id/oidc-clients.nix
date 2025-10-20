@@ -108,6 +108,7 @@ in {
 
                 resp="$(req POST "oidc/clients/${clientCfg.id}/secret")"
                 ${jq} -r '.secret' <<<"$resp"
+                unset APIKEY client resp
               '';
             };
           };

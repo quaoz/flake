@@ -74,7 +74,7 @@
         filter = "vaultwarden-web";
         journalmatch = "_SYSTEMD_UNIT=vaultwarden.service";
         backend = "%(syslog_backend)s";
-        port = "80,443,${config.garden.services.vaultwarden.port}";
+        port = "80,443,${builtins.toString config.garden.services.vaultwarden.port}";
         findtime = "6h";
       };
 
@@ -83,7 +83,7 @@
         filter = "vaultwarden-admin";
         journalmatch = "_SYSTEMD_UNIT=vaultwarden.service";
         backend = "%(syslog_backend)s";
-        port = "80,443,${config.garden.services.vaultwarden.port}";
+        port = "80,443,${builtins.toString config.garden.services.vaultwarden.port}";
         findtime = "6h";
       };
 

@@ -32,7 +32,7 @@ in {
               job_name = "${hn}-${sn}";
               static_configs = [
                 {
-                  targets = ["${hn}:${sc.port}"];
+                  targets = ["${hn}:${builtins.toString sc.port}"];
                 }
               ];
             })
