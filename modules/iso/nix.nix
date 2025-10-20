@@ -1,16 +1,9 @@
 {
-  lib,
-  pkgs,
-  ...
-}: {
   imports = [
     ../common/nix/substituters.nix
   ];
 
   nix = {
-    # use cached nix to speed up build
-    package = lib.mkForce pkgs.lixPackageSets.latest.lix;
-
     # disable nix channels
     channel.enable = false;
 

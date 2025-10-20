@@ -2,7 +2,6 @@
   lib,
   self,
   inputs,
-  config,
   ...
 }: {
   config.nixpkgs = {
@@ -25,7 +24,7 @@
     };
 
     # TODO: remove overlays
-    overlays = lib.optionals (!config.garden.profiles.iso.enable) [
+    overlays = [
       inputs.lix-module.overlays.default
       self.overlays.default
     ];
