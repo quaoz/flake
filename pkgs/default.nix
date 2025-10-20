@@ -1,4 +1,8 @@
-{self, ...}: {
+{
+  self,
+  lib,
+  ...
+}: {
   flake.overlays.default = _: prev: self.packages.${prev.stdenv.hostPlatform.system} or {};
 
   perSystem = {pkgs, ...}: let
@@ -7,6 +11,11 @@
       |> builtins.map (n: let p = pkgs.callPackage n {}; in {${p.pname or p.name} = p;})
       |> builtins.foldl' pkgs.lib.attrsets.unionOfDisjoint {};
   in {
-    inherit packages;
+    # filter out packages not available on this system
+    packages =
+      lib.filterAttrs (
+        _: p: lib.meta.availableOn pkgs.stdenv.hostPlatform p 
+      )
+      packages;
   };
 }

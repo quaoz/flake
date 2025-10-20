@@ -9,14 +9,14 @@
   appName = "Pearcleaner";
   pname = lib.toLower appName;
   version = "4.5.3";
-
-  src = fetchurl {
-    url = "https://github.com/alienator88/Pearcleaner/releases/download/${version}/Pearcleaner.dmg";
-    sha256 = "sha256-NHDsszZ3TCiVqPzBohx/BpEpoXc7BC6Q+nN8+sZtzgo=";
-  };
 in
   stdenv.mkDerivation {
-    inherit src pname version;
+    inherit pname version;
+
+    src = fetchurl {
+      url = "https://github.com/alienator88/Pearcleaner/releases/download/${version}/Pearcleaner.dmg";
+      sha256 = "sha256-NHDsszZ3TCiVqPzBohx/BpEpoXc7BC6Q+nN8+sZtzgo=";
+    };
 
     sourceRoot = ".";
     nativeBuildInputs = [makeWrapper undmg];

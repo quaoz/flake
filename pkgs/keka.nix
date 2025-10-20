@@ -9,14 +9,14 @@
   appName = "Keka";
   pname = lib.toLower appName;
   version = "1.5.2";
-
-  src = fetchurl {
-    url = "https://github.com/aonez/Keka/releases/download/v${version}/Keka-${version}.zip";
-    sha256 = "sha256-ZsWfS9OXu82j9EpQVoQXHXeqPBufNq3Z2znp0TirMbc=";
-  };
 in
   stdenv.mkDerivation {
-    inherit src pname version;
+    inherit pname version;
+
+    src = fetchurl {
+      url = "https://github.com/aonez/Keka/releases/download/v${version}/Keka-${version}.zip";
+      sha256 = "sha256-ZsWfS9OXu82j9EpQVoQXHXeqPBufNq3Z2znp0TirMbc=";
+    };
 
     sourceRoot = ".";
     nativeBuildInputs = [makeWrapper unzip];

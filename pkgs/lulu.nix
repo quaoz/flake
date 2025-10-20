@@ -9,14 +9,14 @@
   appName = "LuLu";
   pname = lib.toLower appName;
   version = "3.1.5";
-
-  src = fetchurl {
-    url = "https://github.com/objective-see/LuLu/releases/download/v${version}/LuLu_${version}.dmg";
-    sha256 = "sha256-eFrOZv6KSZlmLtyPORrD2Low/e7m7HU1WeuT/w8Us7I=";
-  };
 in
   stdenv.mkDerivation {
-    inherit src pname version;
+    inherit pname version;
+
+    src = fetchurl {
+      url = "https://github.com/objective-see/LuLu/releases/download/v${version}/LuLu_${version}.dmg";
+      sha256 = "sha256-eFrOZv6KSZlmLtyPORrD2Low/e7m7HU1WeuT/w8Us7I=";
+    };
 
     sourceRoot = ".";
     nativeBuildInputs = [makeWrapper undmg];

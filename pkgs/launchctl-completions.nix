@@ -6,16 +6,16 @@
 }: let
   pname = "launchctl-completion";
   version = "1.0";
-
-  src = fetchFromGitHub {
-    owner = "CamJN";
-    repo = "launchctl-completion";
-    rev = "3cb60f81a1c588273eababbf6e627e041013844d";
-    hash = "sha256-wtZhrDWWjEc1rdL3Mf/b582dklialIcWa3gwqyHc3J4=";
-  };
 in
   stdenv.mkDerivation {
-    inherit src pname version;
+    inherit pname version;
+
+    src = fetchFromGitHub {
+      owner = "CamJN";
+      repo = "launchctl-completion";
+      rev = "3cb60f81a1c588273eababbf6e627e041013844d";
+      hash = "sha256-wtZhrDWWjEc1rdL3Mf/b582dklialIcWa3gwqyHc3J4=";
+    };
 
     nativeBuildInputs = [installShellFiles];
 
@@ -23,12 +23,12 @@ in
       installShellCompletion --bash --name launchctl.bash launchctl-completion.sh
     '';
 
-    meta = {
+    meta = with lib; {
       description = "i hate launchctl so so so much";
       homepage = "https://github.com/CamJN/launchctl-completion";
-      license = lib.licenses.mit;
-      maintainers = with lib.maintainers; [quaoz];
-      platforms = lib.platforms.darwin;
+      license = licenses.mit;
+      maintainers = with maintainers; [quaoz];
+      platforms = platforms.darwin;
       mainProgram = pname;
     };
   }

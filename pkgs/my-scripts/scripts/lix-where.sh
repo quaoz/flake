@@ -15,10 +15,11 @@ if [[ -z $PACKAGE ]]; then
 fi
 
 # shellcheck disable=SC2016
+cs='${builtins.currentSystem}'
 expr="
 let
   nixpkgs = builtins.getFlake \"nixpkgs\";
-  pkgs = nixpkgs.legacyPackages.${SYSTEM:-"\${builtins.currentSystem}"};
+  pkgs = nixpkgs.legacyPackages.${SYSTEM:-$cs};
 in
   pkgs.${PACKAGE}.outPath
 "

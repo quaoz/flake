@@ -20,11 +20,12 @@ in
 
     ldflags = ["-s" "-w"];
 
-    meta = {
+    meta = with lib; {
       description = "Collect and export metrics on Fail2Ban";
       homepage = "https://gitlab.com/hctrdev/fail2ban-prometheus-exporter.git";
-      license = lib.licenses.mit;
-      maintainers = with lib.maintainers; [quaoz];
+      license = licenses.mit;
+      maintainers = with maintainers; [quaoz];
+      platforms = platforms.linux;
       mainProgram = "fail2ban-prometheus-exporter";
     };
   }
