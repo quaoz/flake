@@ -6,7 +6,7 @@
   ...
 }: let
   # TODO: this is lowk a complete mess, might be worth looking into sops or vaultix
-  inherit (lib.types) pathWith listOf str submodule enum attrs attrsOf bool functionTo either;
+  inherit (lib.types) pathWith listOf str submodule bool;
   inherit (config.networking) hostName;
   inherit (config.me) username pubkey;
   inherit (self.lib) mkOpt mkOpt';
@@ -78,6 +78,10 @@ in {
             ...
           }: ''
             ${lib.getExe pkgs.mkpasswd} -sm bcrypt < <(${decrypt} ${lib.escapeShellArg deps.input.file})
+          '';
+
+          rsa = {pkgs, ...}: ''
+            ${lib.getExe pkgs.openssl} genrsa -traditional 4096
           '';
         };
 

@@ -1,6 +1,14 @@
 {
   description = "waow";
 
+  nixConfig = {
+    extra-experimental-features = [
+      # needed for ci
+      "pipe-operator"
+      "pipe-operators"
+    ];
+  };
+
   outputs = inputs: inputs.flake-parts.lib.mkFlake {inherit inputs;} {imports = [./modules/flake];};
 
   inputs = {
@@ -84,6 +92,11 @@
     };
 
     ##### other #####
+
+    buildbot-nix = {
+      url = "github:nix-community/buildbot-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # declarative disk formatting
     disko = {
