@@ -132,7 +132,9 @@
 
     # theming framework
     stylix = {
-      url = "github:nix-community/stylix";
+      # TODO: revert once https://github.com/nix-community/stylix/pull/1938 is merged
+      # url = "github:nix-community/stylix";
+      url = "github:arunoruto/stylix/vivid";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

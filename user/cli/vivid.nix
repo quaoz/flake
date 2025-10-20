@@ -1,0 +1,5 @@
+{
+  programs.vivid = {
+    enable = true;
+  };
+}
