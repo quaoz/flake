@@ -30,6 +30,7 @@
         # TODO: fix nokogiri build
         # actionlint.enable = true;
 
+
         alejandra.enable = true;
 
         deadnix.enable = true;
@@ -67,6 +68,7 @@
                   extend-words = builtins.foldl' (acc: word: acc // {${word} = word;}) {} [
                     "HELO"
                     "fo"
+                    "rin"
                   ];
                 };
 
