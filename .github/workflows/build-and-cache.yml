@@ -2,7 +2,16 @@ name: Build & Cache Flake Outputs
 
 on:
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        required: false
+        type: string
   push:
+    paths:
+      - "**.nix"
+      - "**.lock"
+      - ".github/workflows/build-and-cache.yml"
 
 jobs:
   build-and-cache:
@@ -14,13 +23,16 @@ jobs:
             system: aarch64-darwin
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref && inputs.ref || github.ref_name }}
+          persist-credentials: false
 
       - name: Install Lix
         uses: canidae-solutions/lix-quick-install-action@v3
 
-      - name: Setup Attic cache
+      - name: Setup Attic Cache
         uses: ryanccn/attic-action@v0
         with:
           endpoint: https://cache.xenia.dog
@@ -30,5 +42,5 @@ jobs:
       - name: Install nix-fast-build
         run: nix profile install "github:Mic92/nix-fast-build"
 
-      - name: Run checks
+      - name: Run Checks
         run: nix-fast-build --no-nom --no-link --skip-cached --option accept-flake-config true
