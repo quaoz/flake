@@ -1,10 +1,5 @@
 {inputs, ...}: {
-  systems = [
-    "aarch64-darwin"
-    "aarch64-linux"
-    "x86_64-darwin"
-    "x86_64-linux"
-  ];
+  systems = import inputs.systems;
 
   perSystem = {system, ...}: {
     # controls how packages in the flake are built, not builders in the lib
