@@ -57,9 +57,17 @@ jobs:
     with:
       ref: ${{ needs.update-lockfile.outputs.branch }}
 
+  check:
+    name: Check Flake Lock
+    needs: update-lockfile
+
+    uses: ./.github/workflows/check-lock.yml
+    with:
+      ref: ${{ needs.update-lockfile.outputs.branch }}
+
   merge:
     name: Merge Pull Request
-    needs: [update-lockfile, check]
+    needs: [update-lockfile, build, check]
 
     runs-on: ${{ matrix.os }}
     strategy:

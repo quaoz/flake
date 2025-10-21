@@ -1,0 +1,41 @@
+name: Check Flake Lock
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        description: "Ref To Checkout"
+        type: string
+        required: false
+  push:
+    paths:
+      - "**.lock"
+      - ".github/workflows/check-lock.yml"
+
+permissions: {}
+
+jobs:
+  check-lock:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            system: x86_64-linux
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref && inputs.ref || github.ref_name }}
+          persist-credentials: false
+
+      - name: Install Lix
+        uses: canidae-solutions/lix-quick-install-action@v3
+
+      - name: Install locker
+        run: nix profile install "github:tgirlcloud/pkgs#locker"
+
+      - name: Run Locker
+        run: locker

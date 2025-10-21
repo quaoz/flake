@@ -27,6 +27,7 @@
       inputs = {
         nixpkgs.follows = "nixpkgs";
         lix.follows = "lix";
+        flake-utils.follows = "flake-utils";
       };
     };
 
@@ -55,14 +56,23 @@
 
     ##### shhhh #####
 
-    agenix = {
+    ragenix = {
       url = "github:yaxitech/ragenix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        agenix.follows = "agenix";
+      };
     };
 
     agenix-rekey = {
       url = "github:oddlama/agenix-rekey";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+        devshell.follows = "devshell";
+        treefmt-nix.follows = "treefmt-nix";
+      };
     };
 
     ##### flake #####
@@ -70,7 +80,11 @@
     # nix flake deployment tool
     deploy-rs = {
       url = "github:serokell/deploy-rs";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        utils.follows = "flake-utils";
+        flake-compat.follows = "";
+      };
     };
 
     # simpler devshells
@@ -95,7 +109,12 @@
 
     buildbot-nix = {
       url = "github:nix-community/buildbot-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+        hercules-ci-effects.follows = "";
+        treefmt-nix.follows = "";
+      };
     };
 
     # declarative disk formatting
@@ -107,7 +126,11 @@
     # nix wrapper for dnscontrol
     dnscontrol-nix = {
       url = "git+https://codeberg.org/hu5ky/dnscontrol-nix.git";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        treefmt-nix.follows = "";
+      };
     };
 
     # firefox addons
@@ -119,7 +142,11 @@
     # firefox nightly
     firefox-nightly = {
       url = "github:nix-community/flake-firefox-nightly";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        lib-aggregate.follows = "lib-aggregate";
+        flake-compat.follows = "";
+      };
     };
 
     # firefox nightly on darwin
@@ -140,7 +167,12 @@
     # mailserver
     simple-nixos-mailserver = {
       url = "gitlab:simple-nixos-mailserver/nixos-mailserver";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        nixpkgs-25_05.follows = "";
+        git-hooks.follows = "";
+        flake-compat.follows = "";
+      };
     };
 
     # theming framework
@@ -148,7 +180,37 @@
       # TODO: revert once https://github.com/nix-community/stylix/pull/1938 is merged
       # url = "github:nix-community/stylix";
       url = "github:arunoruto/stylix/vivid";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        systems.follows = "systems";
+        flake-parts.follows = "flake-parts";
+      };
+    };
+
+    ##### locker #####
+
+    systems.url = "github:nix-systems/default";
+
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+      inputs.systems.follows = "systems";
+    };
+
+    lib-aggregate = {
+      url = "github:nix-community/lib-aggregate";
+      inputs = {
+        flake-utils.follows = "flake-utils";
+        nixpkgs-lib.follows = "nixpkgs";
+      };
+    };
+
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        systems.follows = "systems";
+        home-manager.follows = "home-manager";
+      };
     };
 
     ##### tempoary #####
@@ -156,7 +218,11 @@
     # TODO: remove once version supporting pipe-operator in nixpkgs (>v0.5.8)
     statix = {
       url = "github:oppiliappan/statix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+        systems.follows = "systems";
+      };
     };
   };
 }

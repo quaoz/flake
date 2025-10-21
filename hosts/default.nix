@@ -29,14 +29,14 @@ in {
           inputs.home-manager.nixosModules.home-manager
           inputs.stylix.nixosModules.stylix
           inputs.agenix-rekey.nixosModules.default
-          inputs.agenix.nixosModules.default
+          inputs.ragenix.nixosModules.default
         ])
 
         (lib.optionals (class == "darwin") [
           inputs.home-manager.darwinModules.home-manager
           inputs.stylix.darwinModules.stylix
           inputs.agenix-rekey.nixosModules.default
-          inputs.agenix.darwinModules.default
+          inputs.ragenix.darwinModules.default
         ])
       ];
     };
