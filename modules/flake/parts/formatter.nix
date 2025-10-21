@@ -27,7 +27,8 @@
 
       programs = {
         # keep-sorted start block=yes newline_separated=yes
-        actionlint.enable = true;
+        # TODO: fix nokogiri build
+        # actionlint.enable = true;
 
         alejandra.enable = true;
 
