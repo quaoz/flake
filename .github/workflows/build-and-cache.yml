@@ -2,28 +2,19 @@ name: Build & Cache Flake Outputs
 
 on:
   workflow_dispatch:
-    inputs:
-      debug_enabled:
-        description: "Enable Tmate Debugging"
-        type: boolean
-        required: false
-        default: false
   workflow_call:
     inputs:
       ref:
         description: "Ref To Checkout"
         type: string
         required: false
-      debug_enabled:
-        description: "Enable Tmate Debugging"
-        type: boolean
-        required: false
-        default: false
   push:
     paths:
       - "**.nix"
       - "**.lock"
       - ".github/workflows/build-and-cache.yml"
+
+permissions: {}
 
 jobs:
   build-and-cache:
@@ -35,13 +26,6 @@ jobs:
             system: aarch64-darwin
 
     steps:
-      - name: Setup Tmate
-        uses: mxschmitt/action-tmate@v3
-        if: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call') && inputs.debug_enabled }}
-        with:
-          limit-access-to-actor: true
-          detached: true
-
       - name: Checkout
         uses: actions/checkout@v5
         with:
