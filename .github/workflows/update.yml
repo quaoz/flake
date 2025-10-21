@@ -2,8 +2,17 @@ name: Bump Flake Inputs
 
 on:
   workflow_dispatch:
+    inputs:
+      debug_enabled:
+        description: "Enable Tmate Debugging"
+        type: boolean
+        required: false
+        default: false
   schedule:
-    - cron: "4 0 * * *"
+    - cron: "0 3 * * *"
+  push:
+    paths:
+      - ".github/workflows/update.yml"
 
 jobs:
   update-lockfile:
@@ -19,6 +28,13 @@ jobs:
       branch: ${{ steps.pr.outputs.pull-request-branch }}
 
     steps:
+      - name: Setup Tmate
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        with:
+          limit-access-to-actor: true
+          detached: true
+
       - name: Checkout
         uses: actions/checkout@v5
         with:
@@ -46,6 +62,7 @@ jobs:
 
     uses: ./.github/workflows/build-and-cache.yml
     with:
+      debug_enabled: ${{ inputs.debug_enabled }}
       ref: ${{ needs.update-lockfile.outputs.branch }}
 
   merge:

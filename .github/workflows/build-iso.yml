@@ -2,11 +2,18 @@ name: Build & Release ISO Images
 
 on:
   workflow_dispatch:
+    inputs:
+      debug_enabled:
+        description: "Enable Tmate Debugging"
+        type: boolean
+        required: false
+        default: false
   schedule:
     - cron: "0 4 1,15 * *"
   push:
     paths:
       - "modules/iso/**"
+      - ".github/workflows/build-iso.yml"
 
 jobs:
   build-isos:
@@ -18,6 +25,13 @@ jobs:
             system: x86_64-linux
 
     steps:
+      - name: Setup Tmate
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        with:
+          limit-access-to-actor: true
+          detached: true
+
       - name: Checkout
         uses: actions/checkout@v5
         with:
@@ -40,7 +54,7 @@ jobs:
           cache: prod
 
       - name: Build Iso
-        run: nix build -L .#nixosConfigurations.blume.config.system.build.isoImage
+        run: nix build --print-build-logs .#nixosConfigurations.blume.config.system.build.isoImage
 
       - name: Upload Release Artifacts
         run: |
