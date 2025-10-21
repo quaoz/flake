@@ -13,12 +13,7 @@
     packages =
       self.lib.nixFiles ./default.nix
       |> builtins.map (n: let
-        p = pkgs.callPackage n {
-          inherit
-            (self'.packages)
-            fail2ban-prometheus-exporter
-            ;
-        };
+        p = pkgs.callPackage n {};
       in {
         ${p.pname or p.name} = p;
       })

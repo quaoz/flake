@@ -3,7 +3,7 @@
   stdenv,
   blocky,
   fetchFromGitHub,
-  fail2ban-prometheus-exporter,
+  fetchFromGitLab,
   ...
 }: let
   name = "dashboards";
@@ -15,8 +15,15 @@
     hash = "sha256-FIOeom1pAuBjD/o3ScEe/QZn/Z8R7eADYXTDZIqlmnM=";
   };
 
+  fail2ban = fetchFromGitLab {
+    owner = "nekowinston";
+    repo = "fail2ban-prometheus-exporter";
+    rev = "96185ca763cc39a13520ca66bfe637bea0dad251";
+    hash = "sha256-wRbVlFUNQcmG5cNxZV4wpV3V4WqiAbGcSgbAnOGTrhE=";
+  };
+
   srcs = {
-    fail2ban = "${fail2ban-prometheus-exporter.src}/_examples/grafana/dashboard.json";
+    fail2ban = "${fail2ban.src}/_examples/grafana/dashboard.json";
     blocky-query = "${blocky.src}/docs/blocky-query-grafana-postgres.json";
     blocky = "${blocky.src}/docs/blocky-grafana.json";
     node = "${node}/prometheus/node-exporter-full.json";
@@ -50,6 +57,6 @@ in
     meta = {
       description = "grafana dashboards";
       maintainers = with lib.maintainers; [quaoz];
-      platforms = lib.platforms.linux;
+      platforms = lib.platforms.all;
     };
   }
