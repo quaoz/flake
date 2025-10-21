@@ -9,7 +9,6 @@ in {
       ../../hosts
       ../../pkgs
       ./args.nix
-      ./checks.nix
       ./options.nix
     ]
     ++ (nixFiles ./parts);
