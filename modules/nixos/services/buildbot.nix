@@ -132,6 +132,13 @@ in {
             config.nix.buildMachines
             |> lib.unique;
 
+          branches = {
+            all = {
+              matchGlob = "*";
+              registerGCRoots = false;
+            };
+          };
+
           admins = ["quaoz"];
           authBackend = "github";
           github = {
