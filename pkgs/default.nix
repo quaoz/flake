@@ -14,7 +14,7 @@
     # filter out packages not available on this system
     packages =
       lib.filterAttrs (
-        _: p: lib.meta.availableOn pkgs.stdenv.hostPlatform p 
+        _: p: lib.meta.availableOn pkgs.stdenv.hostPlatform p
       )
       packages;
   };
