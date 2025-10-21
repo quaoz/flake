@@ -23,7 +23,7 @@
   };
 
   srcs = {
-    fail2ban = "${fail2ban.src}/_examples/grafana/dashboard.json";
+    fail2ban = "${fail2ban}/_examples/grafana/dashboard.json";
     blocky-query = "${blocky.src}/docs/blocky-query-grafana-postgres.json";
     blocky = "${blocky.src}/docs/blocky-grafana.json";
     node = "${node}/prometheus/node-exporter-full.json";
