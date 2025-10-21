@@ -2,6 +2,7 @@
   lib,
   fetchFromGitHub,
   python3Packages,
+  ...
 }: let
   pname = "tccutil";
   version = "1.5.0";

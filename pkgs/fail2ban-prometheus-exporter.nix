@@ -2,6 +2,7 @@
   lib,
   buildGoModule,
   fetchFromGitLab,
+  ...
 }: let
   pname = "fail2ban-prometheus-exporter";
   version = "0.10.3";

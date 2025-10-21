@@ -1,4 +1,4 @@
-{pkgs, ...}: let
+let
   mapPanel = {
     datasource = {
       type = "prometheus";
@@ -104,25 +104,22 @@
     type = "geomap";
   };
 in
-  "${pkgs.fail2ban-prometheus-exporter.src}/_examples/grafana/dashboard.json"
-  |> builtins.readFile
-  |> builtins.fromJSON
-  |> builtins.mapAttrs (
-    n: v:
-      if n == "templating"
-      then {
-        list =
-          builtins.map (
-            x:
-              if x.type == "datasource" && x.query == "prometheus"
-              then x // {name = "DS_PROMETHEUS";}
-              else x
-          )
-          v.list;
-      }
-      else if n == "panels"
-      then v ++ [mapPanel]
-      else v
-  )
-  |> builtins.toJSON
-  |> builtins.toFile "fail2ban-dash.json"
+  n: v:
+    if n == "templating"
+    then {
+      list =
+        builtins.map (
+          x:
+            if x.type == "datasource" && x.query == "prometheus"
+            then
+              x
+              // {
+                name = "DS_PROMETHEUS";
+              }
+            else x
+        )
+        v.list;
+    }
+    else if n == "panels"
+    then v ++ [mapPanel]
+    else v

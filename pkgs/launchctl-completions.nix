@@ -3,6 +3,7 @@
   stdenv,
   fetchFromGitHub,
   installShellFiles,
+  ...
 }: let
   pname = "launchctl-completion";
   version = "1.0";

@@ -74,22 +74,22 @@ in {
             providers = [
               (lib.mkIf (hasMonitor "blocky") {
                 name = "Blocky";
-                options.path = "${pkgs.blocky.src}/docs/blocky-grafana.json";
+                options.path = "${pkgs.dashboards}/share/blocky.json";
               })
 
               (lib.mkIf (hasLocalMonitor "blocky") {
                 name = "Blocky Query";
-                options.path = import ./_dashboards/blocky-query.nix {inherit pkgs;};
+                options.path = "${pkgs.dashboards}/share/blocky-query.json";
               })
 
               (lib.mkIf (hasMonitor "node") {
                 name = "Node";
-                options.path = import ./_dashboards/node.nix {inherit pkgs;};
+                options.path = "${pkgs.dashboards}/share/node.json";
               })
 
               (lib.mkIf (hasMonitor "fail2ban") {
                 name = "Fail2ban";
-                options.path = import ./_dashboards/fail2ban.nix {inherit pkgs;};
+                options.path = "${pkgs.dashboards}/share/fail2ban.json";
               })
             ];
           };
