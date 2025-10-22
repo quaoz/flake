@@ -85,7 +85,7 @@ in {
         Restart = "always";
       };
 
-      path = [pkgs.attic-client config.nix.package];
+      path = [pkgs.attic-client];
       script = ''
         set -euo pipefail
         ATTIC_TOKEN=$(< $CREDENTIALS_DIRECTORY/attic-auth-token)
