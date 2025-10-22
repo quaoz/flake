@@ -188,7 +188,6 @@
         flake-parts.follows = "flake-parts";
         base16-fish.follows = "";
         firefox-gnome-theme.follows = "";
-        gnome-shell.follows = "";
         nur.follows = "";
         tinted-foot.follows = "";
         tinted-kitty.follows = "";
