@@ -13,7 +13,9 @@
 
   inputs = {
     # https://deer.social/profile/did:plc:mojgntlezho4qt7uvcfkdndg/post/3loogwsoqok2w
-    nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz";
+    # TODO: revert once https://nixpk.gs/pr-tracker.html?pr=451386 and https://nixpk.gs/pr-tracker.html?pr=449689 in unstable
+    # nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz";
+    nixpkgs.url = "github:nixos/nixpkgs/fadd022844e51e3ea957482d711f165dae5e8c7c";
 
     # cooler nix
     lix = {
@@ -23,11 +25,11 @@
 
     lix-module = {
       url = "https://git.lix.systems/lix-project/nixos-module/archive/main.tar.gz";
-
       inputs = {
         nixpkgs.follows = "nixpkgs";
         lix.follows = "lix";
         flake-utils.follows = "flake-utils";
+        flakey-profile.follows = "";
       };
     };
 
@@ -184,6 +186,13 @@
         nixpkgs.follows = "nixpkgs";
         systems.follows = "systems";
         flake-parts.follows = "flake-parts";
+        base16-fish.follows = "";
+        firefox-gnome-theme.follows = "";
+        gnome-shell.follows = "";
+        nur.follows = "";
+        tinted-foot.follows = "";
+        tinted-kitty.follows = "";
+        tinted-tmux.follows = "";
       };
     };
 
@@ -210,6 +219,7 @@
         nixpkgs.follows = "nixpkgs";
         systems.follows = "systems";
         home-manager.follows = "home-manager";
+        darwin.follows = "darwin";
       };
     };
 

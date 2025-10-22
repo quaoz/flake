@@ -27,9 +27,7 @@
 
       programs = {
         # keep-sorted start block=yes newline_separated=yes
-        # TODO: fix nokogiri build
-        # actionlint.enable = true;
-
+        actionlint.enable = true;
 
         alejandra.enable = true;
 
@@ -39,10 +37,7 @@
 
         keep-sorted.enable = true;
 
-        prettier = {
-          enable = true;
-          package = pkgs.prettier;
-        };
+        prettier.enable = true;
 
         shellcheck.enable = true;
 
