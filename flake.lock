@@ -319,11 +319,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1761008629,
-        "narHash": "sha256-kLUL7Zvq4fhas9M3VI/j4EIlpXowk2H6ocn+JyT+QVE=",
+        "lastModified": 1761095079,
+        "narHash": "sha256-DsNkTtTiGzTDZ2AZVOmffSPsDn+Pv1TeC2qcw2s7ecs=",
         "owner": "bandithedoge",
         "repo": "nixpkgs-firefox-darwin",
-        "rev": "17660c021ca90e52aeedf34002e22c40e3fe074c",
+        "rev": "8dc5ded5463ae669da20fe2e55e2aba2070e3eb2",
         "type": "github"
       },
       "original": {
@@ -517,7 +517,7 @@
         "narHash": "sha256-9V1UOqxbp1IAd90hahhb5kmGDVbhb+huSHB6uiseKVQ=",
         "rev": "5346b2bc6884ab71c1d0fc858f3b11484d01cbfb",
         "type": "tarball",
-        "url": "https://git.lix.systems/api/v1/repos/lix-project/lix/archive/5346b2bc6884ab71c1d0fc858f3b11484d01cbfb.tar.gz"
+        "url": "https://git.lix.systems/api/v1/repos/lix-project/lix/archive/5346b2bc6884ab71c1d0fc858f3b11484d01cbfb.tar.gz?rev=5346b2bc6884ab71c1d0fc858f3b11484d01cbfb"
       },
       "original": {
         "type": "tarball",
