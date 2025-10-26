@@ -5,18 +5,27 @@
 }: let
   functions = ''
     mkcd() {
-        mkdir -p "$@" && cd "$_";
+        mkdir -p "$*" && cd "$_"
     }
 
     cheat() {
-        local combined="''${@}"
-        ${lib.getExe pkgs.curl} cheat.sh/"''${combined// /-}";
+        local IFS='-'
+        ${lib.getExe pkgs.curl} "cheat.sh/$*"
+    }
+
+    urlencode() {
+        ${lib.getExe pkgs.jq} -r '@uri' <<<"\"$1\""
+    }
+
+    urldecode() {
+        local s="''${*//+/ }"
+        echo -e "''${s//%/\\x}"
     }
 
     swap() {
-        mv "''${1}" "''${1}".tmp
-        mv "''${2}" "''${1}"
-        mv "''${1}".tmp "''${2}"
+        mv "$1" "$1.tmp"
+        mv "$2" "$1"
+        mv "$1.tmp" "$2"
     }
 
     colours() {
