@@ -41,7 +41,10 @@
 
         shellcheck.enable = true;
 
-        shfmt.enable = true;
+        shfmt = {
+          enable = true;
+          indent_size = 0; # use tabs
+        };
 
         statix = {
           enable = true;

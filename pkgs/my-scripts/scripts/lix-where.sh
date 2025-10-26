@@ -11,7 +11,7 @@ flag ONLY_HASH "only print the package hash" -h --hash
 source args "lix-where" "$ARGS" --description 'display the store path of a package' --no-short-help --export-panic -- "$@"
 
 if [[ -z $PACKAGE ]]; then
-  panic 'no package specified'
+	panic 'no package specified'
 fi
 
 # shellcheck disable=SC2016
@@ -26,20 +26,20 @@ in
 path="$(nix eval --quiet --impure --raw --expr "$expr" 2>/dev/null)"
 
 if [[ -z $path ]]; then
-  panic "could not find '$PACKAGE' ${SYSTEM:+for $SYSTEM}"
+	panic "could not find '$PACKAGE' ${SYSTEM:+for $SYSTEM}"
 fi
 
 if [[ $ONLY_HASH == true || -n $STORE ]]; then
-  hash="${path##*/}" # remove store path
-  hash="${hash%%-*}" # remove name (+version)
+	hash="${path##*/}" # remove store path
+	hash="${hash%%-*}" # remove name (+version)
 
-  if [[ -n $STORE && ! $(nix store --quiet --store "$STORE" path-from-hash-part "$hash" 2>/dev/null) ]]; then
-    exit 0
-  fi
+	if [[ -n $STORE && ! $(nix store --quiet --store "$STORE" path-from-hash-part "$hash" 2>/dev/null) ]]; then
+		exit 0
+	fi
 fi
 
 if [[ $ONLY_HASH == true ]]; then
-  echo "$hash"
+	echo "$hash"
 else
-  echo "$path"
+	echo "$path"
 fi
