@@ -9,14 +9,15 @@
 in {
   options.garden.services.postgresql = self.lib.mkServiceOpt "postgresql" {
     port = 5432;
+    user = "postgresql";
+    group = "postgresql";
   };
 
   config = lib.mkIf cfg.enable {
     garden.persist.dirs = [
       {
-        user = "postgresql";
-        group = "postgresql";
         directory = config.services.postgresql.dataDir;
+        inherit (cfg) user group;
       }
     ];
 

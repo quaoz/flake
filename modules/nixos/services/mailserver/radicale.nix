@@ -8,11 +8,11 @@
   cfg = config.garden.services.radicale;
 in {
   options.garden.services.radicale = self.lib.mkServiceOpt "radicale" {
-    visibility = "public";
-    dependsLocal = ["nginx" "mailserver"];
-    host = "127.0.0.1";
     port = 3003;
+    host = "127.0.0.1";
     domain = "cal.${baseDomain}";
+    depends.local = ["mailserver"];
+    proxy.visibility = "public";
   };
 
   config = lib.mkIf cfg.enable {

@@ -101,7 +101,7 @@
   }
   ```
   */
-  mkServiceOpt = name: {
+  mkServiceOptOld = name: {
     enable ? false,
     proxy ? true,
     visibility ? "local",
@@ -127,6 +127,60 @@
     port = mkOpt (types.nullOr types.int) port "The port for the ${name} service";
     host = mkOpt types.str host "The host for ${name} service";
     nginxExtraConf = mkOpt types.attrs nginxExtraConf "Extra config merged with `services.nginx.virtualHosts.\"${domain}\".locations.\"/\"`";
+  };
+
+  mkServiceOpt = name: {
+    enable ? false,
+    port ? null,
+    host ? "127.0.0.1",
+    domain ? null,
+    user ? null,
+    group ? null,
+    depends ? {},
+    proxy ? {},
+    oidc ? {},
+    mail ? {},
+  }: let
+    inherit (lib.types) int str enum attrs listOf bool nullOr;
+    inherit (lib) mkEnableOption;
+  in {
+    enable = mkEnableOption "${name}" // {default = enable;};
+    port = mkOpt int port "The port for ${name}";
+    host = mkOpt str host "The host for ${name}";
+    domain = mkOpt (nullOr str) domain "Domain for ${name}";
+
+    user = mkOpt str user "User for ${name}";
+    group = mkOpt str group "Group for ${name}";
+
+    depends = {
+      local = mkOpt (listOf str) (depends.local or []) "Services running on this host which ${name} depends on";
+      anywhere = mkOpt (listOf str) (depends.anywhere or []) "Services running on any host which ${name} depends on";
+    };
+
+    proxy = {
+      enable = mkEnableOption "automatic nginx configuration for ${name}" // {default = proxy.enable or true;};
+      visibility = mkOpt (enum ["local" "internal" "public"]) (proxy.visibility or "local") "The visibility of the ${name} service";
+      nginxExtra = mkOpt attrs (proxy.nginxExtra or {}) "Extra config merged with `services.nginx.virtualHosts.\"${domain}\".locations.\"/\"`";
+    };
+
+    oidc = {
+      enable = mkEnableOption "OIDC client configuration for ${name}" // {default = oidc.enable or oidc != {};};
+      id = mkOpt str (builtins.hashString "md5" name) "The OIDC client ID for ${name}";
+
+      launchURL = mkOpt str oidc.launchURL or domain "URL to open when ${name} is launched";
+      callbackURLs = mkOpt (listOf str) oidc.callbackURLs or [] "Callback urls for ${name}";
+      logoutCallbackURLs = mkOpt (listOf str) oidc.logoutCallbackURLs or [] "Logout callback urls for ${name}";
+
+      isPublic = mkOpt bool (oidc.isPublic or false) "Whether the client is public";
+      pkceEnabled = mkOpt bool (oidc.pkceEnabled or false) "Whether the client supports PKCE";
+      requiresReauthentication = mkOpt bool (oidc.requiresReauthentication or false) "Whether users must authenticate on each authorization";
+    };
+
+    mail = {
+      enable = mkEnableOption "mail account for ${name}" // {default = mail.enable or false;};
+      account = mkOpt str (mail.account or name) "The mail account name for ${name}";
+      sendOnly = mkOpt bool (mail.sendOnly or true) "Whether the mail account should be send-only";
+    };
   };
 
   mkMonitorOpt = name: {

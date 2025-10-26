@@ -15,17 +15,25 @@
 
   hasLocalMonitor = name: config.garden.services.${name}.enable && config.garden.monitoring.${name}.enable;
 
+  inherit (config.age) secrets;
   cfg = config.garden.services.grafana;
 in {
   options.garden.services.grafana = self.lib.mkServiceOpt "grafana" {
-    visibility = "public";
-    dependsLocal = ["prometheus" "postgresql"];
-    dependsAnywhere = ["pocket-id"];
     port = 9100;
     host = "0.0.0.0";
     domain = "grafana.${config.garden.domain}";
-    nginxExtraConf = {
-      proxyWebsockets = true;
+    user = "grafana";
+    group = "grafana";
+    depends.local = ["prometheus" "postgresql"];
+
+    proxy = {
+      visibility = "public";
+      nginxExtra.proxyWebsockets = true;
+    };
+
+    oidc = {
+      callbackURLs = ["https://${cfg.domain}/login/generic_oauth"];
+      pkceEnabled = true;
     };
   };
 
@@ -33,23 +41,11 @@ in {
     garden.persist.dirs = [
       {
         directory = config.services.grafana.dataDir;
-        user = "grafana";
-        group = "grafana";
+        inherit (cfg) user group;
       }
     ];
 
     services = {
-      pocket-id.oidc-clients.grafana = {
-        launchURL = "https://${cfg.domain}";
-        callbackURLs = ["https://${cfg.domain}/login/generic_oauth"];
-        pkceEnabled = true;
-
-        secret = {
-          user = "grafana";
-          group = "grafana";
-        };
-      };
-
       postgresql = {
         ensureDatabases = ["grafana"];
         ensureUsers = [
@@ -169,7 +165,6 @@ in {
           # https://pocket-id.org/docs/client-examples/grafana
           # https://grafana.com/docs/grafana/latest/setup-grafana/configure-security/configure-authentication/generic-oauth/#configuration-options
           "auth.generic_oauth" = let
-            id = config.services.pocket-id;
             idomain = "https://${config.garden.services.pocket-id.domain}";
           in {
             enabled = true;
@@ -185,8 +180,8 @@ in {
             use_pkce = true;
             use_refresh_token = true;
 
-            client_id = id.oidc-clients.grafana.id;
-            client_secret = "$__file{${id.oidc-clients.grafana.secret.path}}";
+            client_id = cfg.oidc.id;
+            client_secret = "$__file{${secrets.oidc-grafana.path}}";
 
             scopes = "openid email profile groups";
             email_attribute_name = "email:primary";

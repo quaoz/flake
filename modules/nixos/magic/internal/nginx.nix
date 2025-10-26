@@ -1,6 +1,5 @@
 {
   lib,
-  self,
   config,
   ...
 }: let
@@ -9,15 +8,23 @@ in {
   # setup nginx for services running on this host
   config = lib.mkIf cfg.enable {
     services.nginx.virtualHosts =
-      self.lib.services "internal" [cfg.domain] {self = {inherit config;};}
-      |> builtins.filter (sc: sc.proxy)
-      |> builtins.map (sc: {
-        "${sc.domain}" = {
+      lib.filterAttrs (
+        _: sc:
+          sc.enable
+          && sc.domain != null
+          && sc.proxy.enable
+          && sc.proxy.visibility == "internal"
+      )
+      config.garden.services
+      |> lib.mapAttrs' (_: sc: {
+        name = "${sc.domain}";
+
+        value = {
           locations."/" =
             {
               proxyPass = "http://127.0.0.1:${builtins.toString sc.port}";
             }
-            // sc.nginxExtraConf;
+            // sc.proxy.nginxExtra;
 
           # only allow access from tailnet
           extraConfig = ''
@@ -26,7 +33,6 @@ in {
             deny all;
           '';
         };
-      })
-      |> self.lib.safeMerge;
+      });
   };
 }

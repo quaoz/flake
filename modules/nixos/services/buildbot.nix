@@ -11,13 +11,21 @@
   cfg = config.garden.services.buildbot;
 in {
   options.garden.services.buildbot = self.lib.mkServiceOpt "buildbot" {
-    visibility = "public";
-    dependsLocal = ["postgresql" "nginx"];
-    dependsAnywhere = ["attic"];
-    proxy = false;
     port = 3006;
     host = "0.0.0.0";
     domain = "ci.${config.garden.domain}";
+    user = "buildbot";
+    group = "buildbot";
+
+    depends = {
+      local = ["postgresql" "nginx"];
+      anywhere = ["attic"];
+    };
+
+    proxy = {
+      enable = false;
+      visibility = "public";
+    };
   };
 
   imports = [
@@ -30,13 +38,11 @@ in {
       other = [
         {
           path = "services/buildbot/github-oauth-secret.age";
-          user = "buildbot";
-          group = "buildbot";
+          inherit (cfg) user group;
         }
         {
           path = "services/buildbot/github-app-secret.age";
-          user = "buildbot";
-          group = "buildbot";
+          inherit (cfg) user group;
         }
       ];
 

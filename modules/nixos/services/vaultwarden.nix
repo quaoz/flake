@@ -9,14 +9,26 @@
   cfg = config.garden.services.vaultwarden;
 in {
   options.garden.services.vaultwarden = self.lib.mkServiceOpt "vaultwarden" {
-    visibility = "public";
-    dependsAnywhere = ["pocket-id" "mailserver"];
-    dependsLocal = ["postgresql"];
     port = 3004;
     host = "0.0.0.0";
     domain = "vault.${config.garden.domain}";
-    nginxExtraConf = {
-      proxyWebsockets = true;
+    user = "vaultwarden";
+    group = "vaultwarden";
+    depends.local = ["postgresql"];
+
+    proxy = {
+      visibility = "public";
+      nginxExtra.proxyWebsockets = true;
+    };
+
+    oidc = {
+      callbackURLs = ["https://${cfg.domain}/identity/connect/oidc-signin"];
+      pkceEnabled = true;
+    };
+
+    mail = {
+      enable = true;
+      account = "vaultwarden";
     };
   };
 
@@ -25,13 +37,11 @@ in {
       persist.dirs = [
         {
           directory = config.services.vaultwarden.config.DATA_DIR;
-          user = "vaultwarden";
-          group = "vaultwarden";
+          inherit (cfg) user group;
         }
         {
           directory = config.services.vaultwarden.backupDir;
-          user = "vaultwarden";
-          group = "vaultwarden";
+          inherit (cfg) user group;
         }
       ];
 
@@ -42,13 +52,6 @@ in {
         ];
 
         normal = {
-          mailserver-vaultwarden = {
-            owner = "vaultwarden";
-            group = "vaultwarden";
-            generator.script = "alnum";
-            intermediary = true;
-          };
-
           vaultwarden-admin-token = {
             generator.script = "alnum";
             intermediary = true;
@@ -62,7 +65,7 @@ in {
               dependencies = {
                 inherit
                   (config.age.secrets)
-                  _oidc-vaultwarden
+                  oidc-vaultwarden
                   mailserver-vaultwarden
                   vaultwarden-admin-token
                   vaultwarden-push-id
@@ -80,7 +83,7 @@ in {
               in ''
                 ${env "PUSH_INSTALLATION_ID" deps.vaultwarden-push-id}
                 ${env "PUSH_INSTALLATION_KEY" deps.vaultwarden-push-key}
-                ${env "SSO_CLIENT_SECRET" deps._oidc-vaultwarden}
+                ${env "SSO_CLIENT_SECRET" deps.oidc-vaultwarden}
                 ${env "SMTP_PASSWORD" deps.mailserver-vaultwarden}
 
                 salt="$(${lib.getExe pkgs.openssl} rand -base64 32)"
@@ -95,17 +98,6 @@ in {
     };
 
     services = {
-      pocket-id.oidc-clients.vaultwarden = {
-        launchURL = "https://${cfg.domain}";
-        callbackURLs = ["https://${cfg.domain}/identity/connect/oidc-signin"];
-        pkceEnabled = true;
-
-        secret = {
-          user = "vaultwarden";
-          group = "vaultwarden";
-        };
-      };
-
       vaultwarden = {
         enable = true;
         # TODO: remove once version supporting SSO (>1.34.3) in nixpkgs
@@ -143,7 +135,7 @@ in {
           SSO_ONLY = true;
           SSO_AUTHORITY = "https://${config.garden.services.pocket-id.domain}";
           SSO_PKCE = true;
-          SSO_CLIENT_ID = config.services.pocket-id.oidc-clients.vaultwarden.id;
+          SSO_CLIENT_ID = cfg.oidc.id;
           SSO_SIGNUPS_MATCH_EMAIL = false;
 
           # https://github.com/dani-garcia/vaultwarden/wiki/SMTP-Configuration

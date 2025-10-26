@@ -8,12 +8,14 @@
   inherit (config.garden.services) unbound;
 in {
   options.garden.services.blocky = self.lib.mkServiceOpt "blocky" {
-    visibility = "internal";
-    dependsLocal = ["unbound"];
-    domain = "${config.networking.hostName}.${config.garden.magic.internal.domain}";
-    proxy = false;
     port = 53;
     host = "127.0.0.1";
+    depends.local = ["unbound"];
+
+    proxy = {
+      proxy = false;
+      visibility = "internal";
+    };
   };
 
   # if enabled blocky will replace the default dns

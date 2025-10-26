@@ -19,7 +19,12 @@ in {
         dns = inputs.dnscontrol-nix.lib.buildConfig {
           settings.credsFile = secrets.magic-dnscontrol-creds.path;
           domains =
-            builtins.mapAttrs (domain: domainCfg: {
+            builtins.mapAttrs (domain: domainCfg: let
+              subdomain = d:
+                if d == domain
+                then "@"
+                else lib.strings.removeSuffix ".${domain}" d;
+            in {
               inherit (domainCfg) registrar dnsProvider;
               inherit domain;
               defaultTtl = 30;
@@ -28,33 +33,36 @@ in {
                 domainCfg.extraRecords
                 ++ (
                   self.lib.hosts self {}
-                  |> self.lib.services "public" [domain]
-                  |> builtins.map (
-                    service: let
-                      subdomain =
-                        if service.domain == domain
-                        then "@"
-                        else lib.strings.removeSuffix ".${domain}" service.domain;
-                    in [
-                      (
-                        if public.ipv4.enable
-                        then {
-                          inherit (public.ipv4) address;
-                          type = "a";
-                          label = subdomain;
-                        }
-                        else []
+                  |> lib.mapAttrsToList (
+                    _: hc:
+                      lib.filterAttrs (
+                        _: sc:
+                          sc.enable
+                          && sc.domain != null
+                          && sc.proxy.visibility == "public"
+                          && lib.hasSuffix domain sc.domain
                       )
-                      (
-                        if public.ipv6.enable
-                        then {
-                          inherit (public.ipv6) address;
-                          type = "aaaa";
-                          label = subdomain;
-                        }
-                        else []
-                      )
-                    ]
+                      hc.config.garden.services
+                      |> lib.mapAttrsToList (_: sc: [
+                        (
+                          if public.ipv4.enable
+                          then {
+                            inherit (public.ipv4) address;
+                            type = "a";
+                            label = subdomain sc.domain;
+                          }
+                          else []
+                        )
+                        (
+                          if public.ipv6.enable
+                          then {
+                            inherit (public.ipv6) address;
+                            type = "aaaa";
+                            label = subdomain sc.domain;
+                          }
+                          else []
+                        )
+                      ])
                   )
                   |> lib.flatten
                 );

@@ -29,7 +29,7 @@ in {
         message = "Nginx must be enabled on `${config.networking.hostName}` for internal proxying to work.";
       }
       {
-        assertion = (self.lib.hostsWhere self (_: hc: hc.config.garden.services.headscale.enable) {} |> builtins.attrNames) != [];
+        assertion = (self.lib.hostsWhere self (_: hc: hc.config.garden.services.headscale.enable) {}) != {};
         message = "Headscale must be enabled on some host for internal proxying to work.";
       }
     ];

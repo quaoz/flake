@@ -6,14 +6,40 @@
   ...
 }: let
   inherit (config.age) secrets;
+
+  accounts =
+    self.lib.hosts self {}
+    |> lib.mapAttrsToList (
+      _: hc:
+        lib.filterAttrs (
+          _: sc:
+            sc.enable
+            && sc.mail.enable
+        )
+        hc.config.garden.services
+        |> lib.mapAttrs' (sn: sc: {
+          name = "${sc.mail.account}@${baseDomain}";
+
+          value = {
+            inherit (sc.mail) sendOnly;
+            aliases = [sc.mail.account];
+            hashedPasswordFile = secrets."_mailserver-${sn}-hash".path;
+          };
+        })
+    )
+    |> self.lib.safeMerge;
+
   baseDomain = config.garden.domain;
   cfg = config.garden.services.mailserver;
 in {
   options.garden.services.mailserver = self.lib.mkServiceOpt "mailserver" {
-    visibility = "public";
-    dependsLocal = ["redis" "nginx"];
-    proxy = false;
     domain = "mail.${baseDomain}";
+    depends.local = ["redis" "nginx"];
+
+    proxy = {
+      enable = false;
+      visibility = "public";
+    };
   };
 
   imports = [
@@ -54,25 +80,30 @@ in {
             "services/mailserver/noreply.age"
           ];
 
-        normal = {
-          mailserver-vaultwarden-hash = {
-            inherit group;
-            owner = user;
-            generator = {
-              script = "bcrypt";
-              dependencies.input = secrets.mailserver-vaultwarden;
-            };
-          };
+        normal =
+          self.lib.hosts self {}
+          |> lib.mapAttrsToList (
+            _: hc:
+              lib.filterAttrs (_: sc: sc.enable && sc.mail.enable) hc.config.garden.services
+              |> lib.mapAttrsToList (sn: sc: {
+                "mailserver-${sn}" = {
+                  inherit (sc) group;
+                  owner = sc.user;
+                  generator.script = "alnum";
+                };
 
-          mailserver-pocket-id-hash = {
-            inherit group;
-            owner = user;
-            generator = {
-              script = "bcrypt";
-              dependencies.input = secrets.mailserver-pocket-id;
-            };
-          };
-        };
+                "_mailserver-${sn}-hash" = {
+                  inherit group;
+                  owner = user;
+                  generator = {
+                    script = "bcrypt";
+                    dependencies.input = secrets."mailserver-${sn}";
+                  };
+                };
+              })
+          )
+          |> lib.flatten
+          |> self.lib.safeMerge;
       };
     };
 
@@ -128,54 +159,40 @@ in {
         ];
       };
 
-      loginAccounts = {
-        "${config.me.username}@${baseDomain}" = {
-          hashedPasswordFile = secrets.mailserver-me.path;
-          aliases = [
-            config.me.username
-            "me"
-            "me@${baseDomain}"
-          ];
-        };
+      loginAccounts =
+        accounts
+        // {
+          "${config.me.username}@${baseDomain}" = {
+            hashedPasswordFile = secrets.mailserver-me.path;
+            aliases = [
+              config.me.username
+              "me"
+              "me@${baseDomain}"
+            ];
+          };
 
-        "admin@${baseDomain}" = {
-          hashedPasswordFile = secrets.mailserver-admin.path;
-          aliases = [
-            "acme"
-            "acme@${baseDomain}"
-            "abuse"
-            "abuse@${baseDomain}"
-            "dmarc"
-            "dmarc@${baseDomain}"
-            "postmaster"
-            "postmaster@${baseDomain}"
-          ];
-        };
+          "admin@${baseDomain}" = {
+            hashedPasswordFile = secrets.mailserver-admin.path;
+            aliases = [
+              "acme"
+              "acme@${baseDomain}"
+              "abuse"
+              "abuse@${baseDomain}"
+              "dmarc"
+              "dmarc@${baseDomain}"
+              "postmaster"
+              "postmaster@${baseDomain}"
+            ];
+          };
 
-        "noreply@${baseDomain}" = {
-          hashedPasswordFile = secrets.mailserver-noreply.path;
-          sendOnly = true;
-          aliases = [
-            "noreply"
-          ];
+          "noreply@${baseDomain}" = {
+            hashedPasswordFile = secrets.mailserver-noreply.path;
+            sendOnly = true;
+            aliases = [
+              "noreply"
+            ];
+          };
         };
-
-        "vaultwarden@${baseDomain}" = {
-          hashedPasswordFile = secrets.mailserver-vaultwarden-hash.path;
-          sendOnly = true;
-          aliases = [
-            "vaultwarden"
-          ];
-        };
-
-        "auth@${baseDomain}" = {
-          hashedPasswordFile = secrets.mailserver-pocket-id-hash.path;
-          sendOnly = true;
-          aliases = [
-            "auth"
-          ];
-        };
-      };
 
       mailboxes = {
         Archive = {

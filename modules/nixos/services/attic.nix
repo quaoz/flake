@@ -8,14 +8,15 @@
   cfg = config.garden.services.attic;
 in {
   options.garden.services.attic = self.lib.mkServiceOpt "attic" {
-    visibility = "public";
-    dependsLocal = ["postgresql"];
     port = 3005;
     host = "0.0.0.0";
     domain = "cache.${config.garden.domain}";
-    nginxExtraConf = {
-      extraConfig = ''
-        client_max_body_size 512m;
+    depends.local = ["postgresql"];
+
+    proxy = {
+      visibility = "public";
+      nginxExtra.extraConfig = ''
+        client_max_body_size 612m;
       '';
     };
   };

@@ -4,6 +4,7 @@
   config,
   ...
 }: let
+  inherit (config.age) secrets;
   cfg = config.garden.services.headscale;
 in {
   options = {
@@ -16,13 +17,20 @@ in {
     })) [] "Extra DNS records";
 
     garden.services.headscale = self.lib.mkServiceOpt "headscale" {
-      visibility = "public";
-      dependsAnywhere = ["blocky" "pocket-id"];
       port = 4001;
       host = "0.0.0.0";
       domain = "hs.${config.garden.domain}";
-      nginxExtraConf = {
-        proxyWebsockets = true;
+      inherit (config.services.headscale) user group;
+      depends.anywhere = ["blocky"];
+
+      proxy = {
+        visibility = "public";
+        nginxExtra.proxyWebsockets = true;
+      };
+
+      oidc = {
+        callbackURLs = ["https://${cfg.domain}/oidc/callback"];
+        pkceEnabled = true;
       };
     };
   };
@@ -34,7 +42,7 @@ in {
   config = lib.mkIf cfg.enable {
     garden.persist.dirs = [
       {
-        inherit (config.services.headscale) user group;
+        inherit (cfg) user group;
         directory = "/var/lib/headscale";
       }
     ];
@@ -51,16 +59,6 @@ in {
     };
 
     services = {
-      pocket-id.oidc-clients.headscale = {
-        launchURL = "https://${cfg.domain}";
-        callbackURLs = ["https://${cfg.domain}/oidc/callback"];
-        pkceEnabled = true;
-
-        secret = {
-          inherit (config.services.headscale) user group;
-        };
-      };
-
       headscale = {
         enable = true;
         address = cfg.host;
@@ -85,12 +83,10 @@ in {
           };
 
           # https://pocket-id.org/docs/client-examples/headscale
-          oidc = let
-            id = config.services.pocket-id;
-          in {
+          oidc = {
             issuer = "https://${config.garden.services.pocket-id.domain}";
-            client_id = id.oidc-clients.headscale.id;
-            client_secret_path = id.oidc-clients.headscale.secret.path;
+            client_id = cfg.oidc.id;
+            client_secret_path = secrets.oidc-headscale.path;
             pkce.enabled = true;
             only_start_if_oidc_is_available = true;
           };

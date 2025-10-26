@@ -9,10 +9,13 @@
   cfg = config.garden.services.automx;
 in {
   options.garden.services.automx = self.lib.mkServiceOpt "automx" {
-    visibility = "public";
-    dependsLocal = ["nginx" "mailserver"];
-    proxy = false;
     domain = "autoconfig.${baseDomain}";
+    depends.local = ["nginx" "mailserver"];
+
+    proxy = {
+      enable = false;
+      visibility = "public";
+    };
   };
 
   config = lib.mkIf cfg.enable {

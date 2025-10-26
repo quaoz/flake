@@ -40,7 +40,7 @@ in {
             )
             (
               builtins.map (depName: {
-                assertion = config.garden.services.${depName}.visibility != "local";
+                assertion = config.garden.services.${depName}.proxy.visibility != "local";
                 message = ''
                   `${depName}` is a local service, however `garden.services.${sn}.depends.anywhere`
                   contains `${depName}`. Local services should not be accessed from other hosts.

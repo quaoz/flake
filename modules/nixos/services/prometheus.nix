@@ -8,14 +8,15 @@
 in {
   options.garden.services.prometheus = self.lib.mkServiceOpt "prometheus" {
     port = 9000;
+    user = "prometheus";
+    group = "prometheus";
   };
 
   config = lib.mkIf cfg.enable {
     garden.persist.dirs = [
       {
         directory = "/var/lib/${config.services.prometheus.stateDir}";
-        user = "prometheus";
-        group = "prometheus";
+        inherit (cfg) user group;
       }
     ];
 

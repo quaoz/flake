@@ -5,26 +5,25 @@
   ...
 }: let
   inherit (config.age) secrets;
-
-  user = "geoip";
-  group = "geoip";
-
   cfg = config.garden.services.geoip;
 in {
-  options.garden.services.geoip = self.lib.mkServiceOpt "geoip" {};
+  options.garden.services.geoip = self.lib.mkServiceOpt "geoip" {
+    user = "geoip";
+    group = "geoip";
+  };
 
   config = lib.mkIf cfg.enable {
     garden = {
       persist.dirs = [
         {
-          inherit user group;
+          inherit (cfg) user group;
           directory = config.services.geoipupdate.settings.DatabaseDirectory;
         }
       ];
 
       secrets.other = [
         {
-          inherit user group;
+          inherit (cfg) user group;
           path = "api/maxmind.age";
           shared = true;
         }
@@ -32,17 +31,17 @@ in {
     };
 
     users = {
-      users.${user} = {
-        inherit group;
+      users.${cfg.user} = {
+        inherit (cfg) group;
         createHome = false;
         isSystemUser = true;
       };
-      groups.geoip = {};
+      groups.${cfg.group} = {};
     };
 
     systemd.services.geoipupdate.serviceConfig = {
-      User = user;
-      Group = group;
+      User = cfg.user;
+      Group = cfg.group;
     };
 
     services.geoipupdate = {
@@ -53,7 +52,7 @@ in {
         AccountID = 1224291;
         DatabaseDirectory = "/var/lib/geoip";
         EditionIDs = ["GeoLite2-City"];
-        LicenseKey = secrets."api-maxmind-${user}".path;
+        LicenseKey = secrets."api-maxmind-${cfg.user}".path;
       };
     };
   };

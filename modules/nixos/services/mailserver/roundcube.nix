@@ -8,10 +8,13 @@
   cfg = config.garden.services.roundcube;
 in {
   options.garden.services.roundcube = self.lib.mkServiceOpt "roundcube" {
-    visibility = "public";
-    dependsLocal = ["postgresql" "nginx" "mailserver"];
-    proxy = false;
     domain = "webmail.${config.garden.domain}";
+    depends.local = ["postgresql" "nginx" "mailserver"];
+
+    proxy = {
+      enable = false;
+      visibility = "public";
+    };
   };
 
   config = lib.mkIf cfg.enable {

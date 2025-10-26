@@ -9,18 +9,26 @@
   gcfg = config.garden.services.pocket-id;
 
   clientsFile =
-    self.lib.hostsWhere self (_: hc: hc.config.services.pocket-id.oidc-clients != {}) {}
-    |> lib.mapAttrsToList (_: hc: hc.config.services.pocket-id.oidc-clients)
-    |> self.lib.safeMerge
+    self.lib.hosts self {}
     |> lib.mapAttrsToList (
-      name: clientCfg: (builtins.removeAttrs clientCfg ["secret"]) // {inherit name;}
+      _: hc:
+        lib.filterAttrs (
+          _: sc:
+            sc.enable
+            && sc.oidc.enable
+        )
+        hc.config.garden.services
+        |> lib.mapAttrsToList (
+          name: sc: builtins.removeAttrs sc.oidc ["enable"] // {inherit name;}
+        )
     )
+    |> lib.flatten
     |> builtins.toJSON
     |> builtins.toFile "oidc-clients.json";
 
   script = pkgs.writeShellApplication {
     name = "pocket-id-manage";
-    meta.description = "declarative management of pocket-id oidc clients";
+    meta.description = "declarative management of pocket-id OIDC clients";
 
     runtimeInputs = [
       pkgs.uutils-coreutils-noprefix
@@ -38,50 +46,29 @@
     text = builtins.readFile ./manage.sh;
   };
 
-  inherit (self.lib) mkOpt mkOpt';
   inherit (config.age) secrets;
-  inherit (lib) types;
 in {
   options.services.pocket-id = {
-    purgeClients = lib.mkEnableOption "remove unspecified oidc clients";
-
-    oidc-clients = mkOpt (types.attrsOf (
-      types.submodule ({config, ...}: let
-        inherit (config._module.args) name;
-      in {
-        options = {
-          id = mkOpt types.str (builtins.hashString "md5" name) "The clients id";
-
-          launchURL = mkOpt' types.str "URL to open when ${name} is launched";
-          callbackURLs = mkOpt (types.listOf types.str) [] "Callback urls for ${name}";
-          logoutCallbackURLs = mkOpt (types.listOf types.str) [] "Logout callback urls for ${name}";
-
-          isPublic = mkOpt types.bool false "Whether the client is public";
-          pkceEnabled = mkOpt types.bool false "Whether the client supports PKCE";
-          requiresReauthentication = mkOpt types.bool false "Whether users must authenticate on each authorization";
-
-          secret = {
-            user = mkOpt' types.str "The secret owner";
-            group = mkOpt' types.str "The secrets group";
-            path = mkOpt' types.path "Path to the oidc secret";
-          };
-        };
-
-        config.secret = {
-          inherit (secrets."_oidc-${name}") path;
-        };
-      })
-    )) {} "OIDC clients to provision";
+    purgeClients = lib.mkEnableOption "remove unspecified OIDC clients";
   };
 
   config = {
     garden.secrets = {
+      other = lib.optionals gcfg.enable [
+        {
+          inherit (cfg) user group;
+          path = "services/pocket-id/api-key.age";
+        }
+      ];
+
       normal =
-        lib.mapAttrs' (name: clientCfg: {
-          name = "_oidc-${name}";
+        lib.filterAttrs (_: sc: sc.enable && sc.oidc.enable) config.garden.services
+        |> lib.mapAttrs' (sn: sc: {
+          name = "oidc-${sn}";
+
           value = {
-            inherit (clientCfg.secret) group;
-            owner = clientCfg.secret.user;
+            inherit (sc) group;
+            owner = sc.user;
 
             generator = {
               tags = ["oidc"];
@@ -101,30 +88,22 @@ in {
                     ${xh} --body --pretty none "$1" "https://${gcfg.domain}/api/$2" "x-api-key:$APIKEY" "''${@:3}"
                 }
 
-                client="$(req GET "oidc/clients/${clientCfg.id}" 2>/dev/null)"
+                client="$(req GET "oidc/clients/${sc.oidc.id}" 2>/dev/null)"
                 if [[ "$(${jq} 'has("error")' <<<"$client")" == true ]]; then
-                    req POST "oidc/clients" 'name=${name}' 'id=${clientCfg.id}' &>/dev/null
+                    req POST "oidc/clients" 'name=${sn}' 'id=${sc.oidc.id}' &>/dev/null
                 fi
 
-                resp="$(req POST "oidc/clients/${clientCfg.id}/secret")"
+                resp="$(req POST "oidc/clients/${sc.oidc.id}/secret")"
                 ${jq} -r '.secret' <<<"$resp"
                 unset APIKEY client resp
               '';
             };
           };
-        })
-        cfg.oidc-clients;
-
-      other = lib.optionals gcfg.enable [
-        {
-          inherit (cfg) user group;
-          path = "services/pocket-id/api-key.age";
-        }
-      ];
+        });
     };
 
     systemd.services.pocket-id-manage = lib.mkIf gcfg.enable {
-      description = "manage pocket-id oidc clients";
+      description = "manage pocket-id OIDC clients";
 
       wantedBy = ["multi-user.target"];
       after = ["network.target" "pocket-id.service"];
