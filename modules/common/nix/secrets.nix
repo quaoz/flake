@@ -7,22 +7,34 @@
 in {
   config = {
     garden.secrets = {
-      user = [
-        "api/github.age"
-        "services/attic/normal-token.age"
-      ];
+      intermediary = ["api/github.age"];
+      user = ["services/attic/normal-token.age"];
 
-      normal.nix-netrc.generator = {
-        dependencies.attic = secrets.attic-normal-token;
+      normal = {
+        nix-netrc.generator = {
+          dependencies.attic = secrets.attic-normal-token;
 
-        script = {
-          deps,
-          decrypt,
-          ...
-        }: ''
-          echo "machine cache.${config.garden.domain}"
-          echo "password $(${decrypt} ${lib.escapeShellArg deps.attic.file})"
-        '';
+          script = {
+            deps,
+            decrypt,
+            ...
+          }: ''
+            echo "machine cache.${config.garden.domain}"
+            echo "password $(${decrypt} ${lib.escapeShellArg deps.attic.file})"
+          '';
+        };
+
+        nix-access-tokens.generator = {
+          dependencies.github = secrets.api-github;
+
+          script = {
+            deps,
+            decrypt,
+            ...
+          }: ''
+            echo "access-tokens = github.com=$(${decrypt} ${lib.escapeShellArg deps.github.file})"
+          '';
+        };
       };
     };
 
@@ -32,7 +44,7 @@ in {
       };
 
       extraOptions = ''
-        !include ${secrets.api-github.path}
+        !include ${secrets.nix-access-tokens.path}
       '';
     };
   };
