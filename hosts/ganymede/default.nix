@@ -21,9 +21,10 @@
       atuin.enable = true;
       blocky.enable = true;
       buildbot.enable = true;
-      unbound.enable = true;
+      glance.enable = true;
       headscale.enable = true;
       pocket-id.enable = true;
+      unbound.enable = true;
       vaultwarden.enable = true;
 
       automx.enable = true;

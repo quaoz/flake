@@ -30,6 +30,9 @@ user_pref("privacy.clearOnShutdown_v2.historyFormDataAndDownloads", false);
 // [SETTING] General>Startup>Open previous windows and tabs
 user_pref("browser.startup.page", 3);
 
+// PREF: homepage
+user_pref("browser.startup.homepage", "https://home.internal.xenia.dog/");
+
 // PREF: disable auto-INSTALLING Firefox updates [NON-WINDOWS]
 // [NOTE] In FF65+ on Windows this SETTING (below) is now stored in a file and the pref was removed.
 // [SETTING] General>Firefox Updates>Check for updates but let you choose to install them

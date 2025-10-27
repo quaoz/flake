@@ -57,14 +57,12 @@ in {
           blocktube
           buster-captcha-solver
           control-panel-for-twitter
-          cookies-txt
           darkreader
           dearrow
           don-t-fuck-with-paste
-          header-editor
           indie-wiki-buddy
           justdeleteme
-          lovely-forks
+          new-tab-override
           search-by-image
           sponsorblock
           stylus
@@ -73,8 +71,6 @@ in {
           ublacklist
           ublock-origin
           unpaywall
-          user-agent-string-switcher
-          userchrome-toggle-extended
           violentmonkey
           wayback-machine
           web-scrobbler

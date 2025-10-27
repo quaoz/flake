@@ -26,6 +26,11 @@ in {
       enable = false;
       visibility = "public";
     };
+
+    dash = {
+      enable = true;
+      icon = "mdi:nut";
+    };
   };
 
   imports = [

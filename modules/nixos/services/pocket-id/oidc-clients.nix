@@ -19,7 +19,12 @@
         )
         hc.config.garden.services
         |> lib.mapAttrsToList (
-          name: sc: builtins.removeAttrs sc.oidc ["enable"] // {inherit name;}
+          name: sc:
+            builtins.removeAttrs sc.oidc ["enable"]
+            // {
+              inherit (sc.dash) launchURL;
+              inherit name;
+            }
         )
     )
     |> lib.flatten

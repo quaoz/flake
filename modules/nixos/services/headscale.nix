@@ -28,9 +28,16 @@ in {
         nginxExtra.proxyWebsockets = true;
       };
 
+      dash = {
+        enable = true;
+        icon = "sh:headscale-light";
+        healthURL = "https://${cfg.domain}/health";
+      };
+
       oidc = {
-        callbackURLs = ["https://${cfg.domain}/oidc/callback"];
+        enable = true;
         pkceEnabled = true;
+        callbackURLs = ["https://${cfg.domain}/oidc/callback"];
       };
     };
   };

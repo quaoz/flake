@@ -15,6 +15,11 @@ in {
       enable = false;
       visibility = "public";
     };
+
+    dash = {
+      enable = true;
+      icon = "sh:roundcube-light";
+    };
   };
 
   config = lib.mkIf cfg.enable {

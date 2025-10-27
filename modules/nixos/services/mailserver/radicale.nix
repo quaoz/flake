@@ -13,6 +13,11 @@ in {
     domain = "cal.${baseDomain}";
     depends.local = ["mailserver"];
     proxy.visibility = "public";
+
+    dash = {
+      enable = true;
+      icon = "sh:radicale-light";
+    };
   };
 
   config = lib.mkIf cfg.enable {

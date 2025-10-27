@@ -31,9 +31,16 @@ in {
       nginxExtra.proxyWebsockets = true;
     };
 
+    dash = {
+      enable = true;
+      icon = "sh:grafana-light";
+      healthURL = "https://${cfg.domain}/api/health";
+    };
+
     oidc = {
-      callbackURLs = ["https://${cfg.domain}/login/generic_oauth"];
+      enable = true;
       pkceEnabled = true;
+      callbackURLs = ["https://${cfg.domain}/login/generic_oauth"];
     };
   };
 

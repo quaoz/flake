@@ -21,9 +21,16 @@ in {
       nginxExtra.proxyWebsockets = true;
     };
 
+    dash = {
+      enable = true;
+      icon = "sh:vaultwarden-light";
+      healthURL = "https://${cfg.domain}/alive";
+    };
+
     oidc = {
-      callbackURLs = ["https://${cfg.domain}/identity/connect/oidc-signin"];
+      enable = true;
       pkceEnabled = true;
+      callbackURLs = ["https://${cfg.domain}/identity/connect/oidc-signin"];
     };
 
     mail = {

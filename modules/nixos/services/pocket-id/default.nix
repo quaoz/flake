@@ -24,6 +24,13 @@ in {
       '';
     };
 
+    dash = {
+      enable = true;
+      icon = "sh:pocket-id-light";
+      healthURL = "https://${cfg.domain}/healthz";
+      okCodes = [204];
+    };
+
     mail = {
       enable = true;
       account = "auth";
@@ -45,16 +52,8 @@ in {
             inherit (cfg) group;
             owner = cfg.user;
 
-            generator = {
-              dependencies.mail = secrets.mailserver-pocket-id;
-
-              script = {
-                deps,
-                decrypt,
-                ...
-              }: ''
-                echo "SMTP_PASSWORD='$(${decrypt} ${lib.escapeShellArg deps.mail.file})'"
-              '';
+            generator = self.lib.mkEnvFile {
+              SMTP_PASSWORD = secrets.mailserver-pocket-id;
             };
           };
         };
