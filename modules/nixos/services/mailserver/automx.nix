@@ -48,6 +48,18 @@ in {
               type = "smtp";
               name = "${mailDomain}";
             }
+            # these need to be created for each user in radicale (https://cal.xenia.dog/),
+            # set the `HREF` field to calendar and contacts respectively to pick them up
+            {
+              type = "caldav";
+              port = 443;
+              url = "https://cal.xenia.dog/%EMAILADDRESS%/calendar/";
+            }
+            {
+              type = "carddav";
+              port = 443;
+              url = "https://cal.xenia.dog/%EMAILADDRESS%/contacts/";
+            }
           ];
         };
       };
