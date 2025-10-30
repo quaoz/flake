@@ -174,6 +174,7 @@ in {
           "admin@${baseDomain}" = {
             hashedPasswordFile = secrets.mailserver-admin.path;
             aliases = [
+              "admin"
               "acme"
               "acme@${baseDomain}"
               "abuse"
