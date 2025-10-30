@@ -63,6 +63,10 @@ in {
                             title = "Timetable";
                             url = "https://mytimetable.leeds.ac.uk/";
                           }
+                          {
+                            title = "Teams";
+                            url = "https://teams.microsoft.com/v2/";
+                          }
                         ];
                       }
                       {
