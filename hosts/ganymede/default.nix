@@ -21,6 +21,7 @@
       atuin.enable = true;
       blocky.enable = true;
       buildbot.enable = true;
+      cook-cli.enable = true;
       glance.enable = true;
       headscale.enable = true;
       pocket-id.enable = true;
