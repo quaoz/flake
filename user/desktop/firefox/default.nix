@@ -57,13 +57,14 @@ in {
           blocktube
           buster-captcha-solver
           control-panel-for-twitter
+          custom-new-tab-page
           darkreader
           dearrow
           don-t-fuck-with-paste
           indie-wiki-buddy
           justdeleteme
-          new-tab-override
           search-by-image
+          single-file
           sponsorblock
           stylus
           terms-of-service-didnt-read
@@ -74,7 +75,6 @@ in {
           violentmonkey
           wayback-machine
           web-scrobbler
-          zotero-connector
           # keep-sorted end
         ];
 
