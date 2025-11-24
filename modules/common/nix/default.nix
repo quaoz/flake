@@ -93,12 +93,6 @@
           # lets nix execute builds inside cgroups
           "cgroups"
 
-          # coerce integers into strings
-          # "coerce-integers"
-
-          # enable fetch-closure builtin
-          "fetch-closure"
-
           # enable flakes
           "flakes"
 
