@@ -1,8 +1,6 @@
 {
   lib,
   pkgs,
-  self,
-  inputs,
   inputs',
   config,
   osConfig,
@@ -11,24 +9,9 @@
   betterfox = pkgs.fetchFromGitHub {
     owner = "yokoffing";
     repo = "Betterfox";
-    rev = "140.0";
-    hash = "sha256-gHFA/1PeQ0iNAcjATGwgJOqRlR9YmxD/RJKkYN36QYA=";
+    rev = "144.0";
+    hash = "sha256-sYOjMSFJSq9VWG4S78n3lXExreYXalUAHmEPXP2vnfM=";
   };
-
-  package =
-    self.lib.ldTernary pkgs
-    inputs'.firefox-nightly.packages.firefox-nightly-bin
-    (
-      pkgs.wrapFirefox ((inputs.firefox-darwin.overlay {} pkgs).firefox-nightly-bin.overrideAttrs {
-        applicationName = "Firefox Nightly";
-
-        # WATCH: https://github.com/bandithedoge/nixpkgs-firefox-darwin/issues/14
-        nativeBuildInputs = [pkgs.makeBinaryWrapper];
-        postInstall = ''
-          wrapProgram $out/Applications/Firefox\ Nightly.app/Contents/MacOS/firefox --set MOZ_LEGACY_PROFILES 1
-        '';
-      }) {}
-    );
 in {
   config = lib.mkIf osConfig.garden.profiles.desktop.enable {
     home.file."${config.programs.firefox.profilesPath}/default/user.js".source = pkgs.concatText "user.js" [
@@ -39,7 +22,7 @@ in {
 
     programs.firefox = {
       enable = true;
-      inherit package;
+      package = pkgs.firefox-beta;
 
       profiles."default" = {
         id = 0;
@@ -49,7 +32,6 @@ in {
           "extensions.autoDisableScopes" = 0;
         };
 
-        # TODO: i don't actually want a lot of these
         extensions.packages = with inputs'.firefox-addons.packages; [
           # keep-sorted start
           auto-tab-discard
@@ -59,14 +41,12 @@ in {
           control-panel-for-twitter
           custom-new-tab-page
           darkreader
-          dearrow
           don-t-fuck-with-paste
           indie-wiki-buddy
           justdeleteme
           search-by-image
           single-file
           sponsorblock
-          stylus
           terms-of-service-didnt-read
           translate-web-pages
           ublacklist
@@ -116,7 +96,6 @@ in {
           default = "ddg";
           force = true;
 
-          # TODO: i also don't really want some of these
           engines = {
             "bing".metaData.hidden = true;
             "amazondotcom-us".metaData.hidden = true;

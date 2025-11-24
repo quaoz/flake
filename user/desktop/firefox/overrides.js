@@ -30,9 +30,6 @@ user_pref("privacy.clearOnShutdown_v2.historyFormDataAndDownloads", false);
 // [SETTING] General>Startup>Open previous windows and tabs
 user_pref("browser.startup.page", 3);
 
-// PREF: homepage
-user_pref("browser.startup.homepage", "https://home.internal.xenia.dog/");
-
 // PREF: disable auto-INSTALLING Firefox updates [NON-WINDOWS]
 // [NOTE] In FF65+ on Windows this SETTING (below) is now stored in a file and the pref was removed.
 // [SETTING] General>Firefox Updates>Check for updates but let you choose to install them
@@ -60,6 +57,11 @@ user_pref("privacy.webrtc.globalMuteToggles", true);
 
 // PREF: don't require extensions to be signed
 user_pref("xpinstall.signatures.required", false);
+
+// PREF: enable vertical tabs
+// [SETTING] General>Browser Layout>Vertical tabs
+user_pref("sidebar.revamp", true);
+user_pref("sidebar.verticalTabs", true);
 
 /****************************************************************************
  * SECTION: SMOOTHFOX                                                       *

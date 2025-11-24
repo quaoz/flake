@@ -141,22 +141,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # firefox nightly
-    firefox-nightly = {
-      url = "github:nix-community/flake-firefox-nightly";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        lib-aggregate.follows = "lib-aggregate";
-        flake-compat.follows = "";
-      };
-    };
-
-    # firefox nightly on darwin
-    firefox-darwin = {
-      url = "github:bandithedoge/nixpkgs-firefox-darwin";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # nix index database
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
@@ -171,7 +155,6 @@
       url = "gitlab:simple-nixos-mailserver/nixos-mailserver";
       inputs = {
         nixpkgs.follows = "nixpkgs";
-        nixpkgs-25_05.follows = "";
         git-hooks.follows = "";
         flake-compat.follows = "";
       };
@@ -202,14 +185,6 @@
     flake-utils = {
       url = "github:numtide/flake-utils";
       inputs.systems.follows = "systems";
-    };
-
-    lib-aggregate = {
-      url = "github:nix-community/lib-aggregate";
-      inputs = {
-        flake-utils.follows = "flake-utils";
-        nixpkgs-lib.follows = "nixpkgs";
-      };
     };
 
     agenix = {
