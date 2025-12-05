@@ -20,6 +20,8 @@ in {
     enable = true;
     enableDefaultConfig = false;
 
+    includes = [secrets.ssh-uni-conf.path];
+
     matchBlocks = {
       "*" = {
         forwardAgent = false;
@@ -40,7 +42,7 @@ in {
         controlPersist = "no";
       };
 
-      "github.com" = {
+      github = {
         user = "git";
         hostname = "github.com";
         identityFile = secrets.ssh-github.path;
