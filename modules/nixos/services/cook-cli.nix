@@ -7,7 +7,7 @@
   cfg = config.garden.services.cook-cli;
 in {
   options.garden.services.cook-cli = self.lib.mkServiceOpt "cook-cli" {
-    port = 4008;
+    port = 3008;
     domain = "cook.${config.garden.magic.internal.domain}";
     user = "cook-cli";
     group = "cook-cli";

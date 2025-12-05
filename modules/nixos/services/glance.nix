@@ -60,6 +60,10 @@ in {
                             url = "https://minerva.leeds.ac.uk/";
                           }
                           {
+                            title = "CheckIn";
+                            url = "https://leeds.ac.uk/webcheckin";
+                          }
+                          {
                             title = "Timetable";
                             url = "https://mytimetable.leeds.ac.uk/";
                           }
