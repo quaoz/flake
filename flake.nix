@@ -13,9 +13,7 @@
 
   inputs = {
     # https://deer.social/profile/did:plc:mojgntlezho4qt7uvcfkdndg/post/3loogwsoqok2w
-    # TODO: revert once https://nixpk.gs/pr-tracker.html?pr=451386 and https://nixpk.gs/pr-tracker.html?pr=449689 in unstable
-    # nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz";
-    nixpkgs.url = "github:nixos/nixpkgs/fadd022844e51e3ea957482d711f165dae5e8c7c";
+    nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz";
 
     # cooler nix
     lix = {
@@ -137,7 +135,7 @@
 
     # firefox addons
     firefox-addons = {
-      url = "git+https://gitlab.com/rycee/nur-expressions?dir=pkgs/firefox-addons";
+      url = "git+https://gitlab.com/rycee/nur-expressions.git?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -162,9 +160,7 @@
 
     # theming framework
     stylix = {
-      # TODO: revert once https://github.com/nix-community/stylix/pull/1938 is merged
-      # url = "github:nix-community/stylix";
-      url = "github:arunoruto/stylix/vivid";
+      url = "github:nix-community/stylix";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         systems.follows = "systems";

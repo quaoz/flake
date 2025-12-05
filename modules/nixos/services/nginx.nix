@@ -1,7 +1,6 @@
 {
   config,
   self,
-  pkgs,
   lib,
   ...
 }: let
@@ -81,8 +80,6 @@ in {
       statusPage = true;
 
       logError = "/var/log/nginx/error.log";
-
-      package = pkgs.nginxQuic;
 
       recommendedTlsSettings = true;
       recommendedBrotliSettings = true;
