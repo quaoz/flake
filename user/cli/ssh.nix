@@ -42,7 +42,7 @@ in {
         controlPersist = "no";
       };
 
-      github = {
+      "github.com" = {
         user = "git";
         hostname = "github.com";
         identityFile = secrets.ssh-github.path;
