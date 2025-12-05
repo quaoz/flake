@@ -90,7 +90,7 @@ in {
               in ''
                 APIKEY="$(${decrypt} ${lib.escapeShellArg deps.api.file})"
                 req() {
-                    ${xh} --body --pretty none "$1" "https://${gcfg.domain}/api/$2" "x-api-key:$APIKEY" "''${@:3}"
+                    ${xh} --ignore-stdin --body --pretty none "$1" "https://${gcfg.domain}/api/$2" "x-api-key:$APIKEY" "''${@:3}"
                 }
 
                 client="$(req GET "oidc/clients/${sc.oidc.id}" 2>/dev/null)"

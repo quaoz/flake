@@ -101,6 +101,8 @@ in {
 
         # WATCH: https://github.com/pocket-id/pocket-id/issues/810
         EMAILS_VERIFIED = true;
+        EMAIL_LOGIN_NOTIFICATION_ENABLED = true;
+        EMAIL_API_KEY_EXPIRATION_ENABLED = true;
         SMTP_HOST = config.garden.services.mailserver.domain;
         SMTP_PORT = 465;
         SMTP_FROM = "auth@${domain}";
