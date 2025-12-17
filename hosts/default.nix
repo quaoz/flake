@@ -74,6 +74,11 @@ in {
         class = "darwin";
       };
 
+      tara = {
+        arch = "aarch64";
+        class = "nixos";
+      };
+
       verenia = {
         arch = "x86_64";
         class = "nixos";

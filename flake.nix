@@ -37,6 +37,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # apple silicon support
+    apple-silicon-support = {
+      url = "github:nix-community/nixos-apple-silicon";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # manage user environment with nix
     home-manager = {
       url = "github:nix-community/home-manager";

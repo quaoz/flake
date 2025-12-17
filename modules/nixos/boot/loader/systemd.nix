@@ -17,7 +17,7 @@ in {
       configurationLimit = 8;
 
       # use largest available console resolution
-      consoleMode = "max";
+      consoleMode = lib.mkDefault "max";
     };
   };
 }
