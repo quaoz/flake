@@ -5,6 +5,7 @@
 }: let
   inherit (config.me) username pubkey;
 in {
+  # $ nix run nixpkgs#ssh-audit -- localhost
   services.openssh = {
     enable = true;
     allowSFTP = true;
@@ -34,16 +35,22 @@ in {
 
     hostKeys = [
       {
-        type = "ed25519";
         path = "/etc/ssh/ssh_host_ed25519_key";
+        type = "ed25519";
+        bits = 4096;
       }
     ];
 
     settings = {
-      # ciphers and keying
       KexAlgorithms = [
-        "curve25519-sha256@libssh.org"
+        "sntrup761x25519-sha512"
+        "sntrup761x25519-sha512@openssh.com"
+        "mlkem768x25519-sha256"
         "curve25519-sha256"
+        "curve25519-sha256@libssh.org"
+        "diffie-hellman-group18-sha512"
+        "diffie-hellman-group16-sha512"
+        "diffie-hellman-group-exchange-sha256"
       ];
 
       Ciphers = [
