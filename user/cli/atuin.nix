@@ -18,7 +18,7 @@ in {
       ];
 
       text = ''
-        if atuin status | rg --fixed-strings 'not logged in' --quiet; then
+        if atuin status 2>&1 | rg --fixed-strings 'not logged in' --quiet; then
             atuin login                                            \
                 --username ${osConfig.me.username}                 \
                 --password "$(cat ${secrets.atuin-password.path})" \
