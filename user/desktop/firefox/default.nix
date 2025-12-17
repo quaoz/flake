@@ -2,24 +2,17 @@
   lib,
   pkgs,
   inputs',
-  config,
   osConfig,
   ...
 }: let
   betterfox = pkgs.fetchFromGitHub {
     owner = "yokoffing";
     repo = "Betterfox";
-    rev = "144.0";
-    hash = "sha256-sYOjMSFJSq9VWG4S78n3lXExreYXalUAHmEPXP2vnfM=";
+    rev = "146.0";
+    hash = "sha256-zGpfQk2gY6ifxIk1fvCk5g5SIFo+o8RItmw3Yt3AeCg=";
   };
 in {
   config = lib.mkIf osConfig.garden.profiles.desktop.enable {
-    home.file."${config.programs.firefox.profilesPath}/default/user.js".source = pkgs.concatText "user.js" [
-      (builtins.toFile "hm-user.js" config.home.file."${config.programs.firefox.profilesPath}/default/user.js".text)
-      "${betterfox}/user.js"
-      ./overrides.js
-    ];
-
     programs.firefox = {
       enable = true;
       package = pkgs.firefox-beta;
@@ -28,9 +21,8 @@ in {
         id = 0;
         isDefault = true;
 
-        settings = {
-          "extensions.autoDisableScopes" = 0;
-        };
+        preConfig = builtins.readFile "${betterfox}/user.js";
+        extraConfig = builtins.readFile ./overrides.js;
 
         extensions.packages = with inputs'.firefox-addons.packages; [
           # keep-sorted start
