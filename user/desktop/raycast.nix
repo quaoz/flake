@@ -6,7 +6,7 @@
 }: {
   # finder replacement (darwin)
   home.packages = with pkgs;
-    lib.optionals osConfig.garden.profiles.desktop.enable [
+    lib.optionals (pkgs.stdenv.isDarwin && osConfig.garden.profiles.desktop.enable) [
       raycast
     ];
 }
