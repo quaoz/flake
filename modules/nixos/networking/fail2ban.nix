@@ -1,6 +1,7 @@
 {
   config,
   self,
+  lib,
   ...
 }: {
   garden.persist.dirs = ["/var/lib/fail2ban"];
@@ -38,10 +39,24 @@
     enable = true;
     bantime = "1h";
     maxretry = 2;
-    ignoreIP = [
+
+    ignoreIP = lib.flatten [
       "127.0.0.0/8"
       "10.0.0.0/8"
       "192.168.0.0/16"
+
+      # tailscale
+      "100.64.0.0/10"
+      "fd7a:115c:a1e0::/48"
+
+      # other hosts
+      (self.lib.hosts self {}
+        |> lib.mapAttrsToList (_: hc: let
+          addresses = hc.config.garden.networking.addresses.public;
+        in [
+          (lib.optionals addresses.ipv4.enable [addresses.ipv4.address])
+          (lib.optionals addresses.ipv6.enable [addresses.ipv6.address])
+        ]))
     ];
 
     bantime-increment = {
