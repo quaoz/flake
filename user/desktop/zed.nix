@@ -71,12 +71,20 @@ in {
               "nil"
               "!nixd"
             ];
+
             formatter = {
               external = {
                 command = "${lib.getExe pkgs.alejandra}";
                 arguments = ["--quiet"];
               };
             };
+          };
+
+          Python = {
+            language_servers = [
+              "ty"
+              "!basedpyright"
+            ];
           };
         };
 
@@ -94,7 +102,7 @@ in {
         };
 
         # always use relative line numbers
-        relative_line_numbers = true;
+        relative_line_numbers = "enabled";
 
         # enable regex in search by default
         search = {
