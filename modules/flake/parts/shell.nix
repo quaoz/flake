@@ -22,6 +22,10 @@
           name = "DIRENV_LOG_FORMAT";
           value = "-";
         }
+        {
+          name = "AGENIX_REKEY_ADD_TO_GIT";
+          value = "true";
+        }
       ];
 
       commands = [
@@ -44,16 +48,21 @@
       packages =
         [
           pkgs.attic-client
+
+          # deploying
           pkgs.nh
+          inputs'.deploy-rs.packages.deploy-rs
+
+          # secrets
           pkgs.rage
+          pkgs.age-plugin-yubikey
+          config.agenix-rekey.package
           # the default darwin `stat` doesn't play nice with agenix generate
           pkgs.uutils-coreutils-noprefix
 
-          config.agenix-rekey.package
+          # formatters
           config.treefmt.build.wrapper
-
           inputs'.locker.packages.locker
-          inputs'.deploy-rs.packages.deploy-rs
         ]
         ++ (
           # make configured formatters available
