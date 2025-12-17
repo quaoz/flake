@@ -17,8 +17,6 @@
   ];
 
   garden = {
-    pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICMOxWr7LsWITmXfclK0QVvYboKsZFYHKoFmvRHVtZWg";
-
     monitoring.enable = true;
     profiles.server.enable = true;
 

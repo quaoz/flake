@@ -8,7 +8,7 @@
   # TODO: this is lowk a complete mess, might be worth looking into sops or vaultix
   inherit (lib.types) pathWith listOf str submodule bool;
   inherit (config.networking) hostName;
-  inherit (config.me) username pubkey;
+  inherit (config.me) username;
   inherit (self.lib) mkOpt mkOpt';
   inherit (pkgs.stdenv) isDarwin;
 
@@ -62,11 +62,11 @@ in {
           localStorageDir = cfg.secretsDir + "/.rekeyed/${hostName}";
           generatedSecretsDir = cfg.secretsDir + "/.generated/";
 
-          hostPubkey = config.garden.pubkey;
+          hostPubkey = cfg.secretsDir + "/keys/${hostName}/ssh.pub";
           masterIdentities = [
             {
-              inherit pubkey;
-              identity = "/Users/${username}/.ssh/id_ed25519";
+              pubkey = "age1yubikey1qt9lmj673kr7d09da6crfuxruqmpqdkhgssrcqpl944mlfg07jl66j9xwn7";
+              identity = cfg.secretsDir + "/keys/yubikey.pub";
             }
           ];
         };
@@ -113,7 +113,7 @@ in {
           in {
             "${name}" = {
               inherit owner group intermediary;
-              rekeyFile = cfg.secretsDir + "/${path}";
+              rekeyFile = cfg.secretsDir + "/secrets/${path}";
             };
           };
 

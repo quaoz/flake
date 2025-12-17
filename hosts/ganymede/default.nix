@@ -3,8 +3,6 @@
   boot.initrd.availableKernelModules = ["uhci_hcd"];
 
   garden = {
-    pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPyzvtWP5s8yxGRVPSjcE+RiBVXMHV9+iPPxH/kDZPo/";
-
     monitoring.enable = true;
     profiles.server.enable = true;
 

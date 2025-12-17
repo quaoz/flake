@@ -12,7 +12,6 @@ in {
 
     garden = {
       domain = mkOpt' types.str "The domain";
-      pubkey = mkOpt' types.str "This hosts pubkey";
 
       profiles = {
         server.enable = mkEnableOption "the server profile";
@@ -39,6 +38,9 @@ in {
       # service monitoring, see: modules/nixos/monitoring
       monitoring = {};
 
+      # networking configuration, see: modules/nixos/networking
+      networking = {};
+
       # persistence, see: modukes/nixos/system/persist
       persist = {};
 
@@ -48,8 +50,8 @@ in {
       # services, see: modules/{nixos,darwin}/services
       services = {};
 
-      # networking configuration, see: modules/nixos/networking
-      networking = {};
+      # system configuration, see: modules/nixos/boot
+      system = {};
     };
   };
 
