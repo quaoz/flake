@@ -16,6 +16,7 @@ in {
       profiles = {
         server.enable = mkEnableOption "the server profile";
         desktop.enable = mkEnableOption "the desktop profile";
+        laptop.enable = mkEnableOption "the laptop profile";
 
         monitoring.enable = mkEnableOption "the monitoring profile";
 
