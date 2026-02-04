@@ -6,6 +6,7 @@
 }: let
   additionalClasses = {
     rpi = "nixos";
+    asahi = "nixos";
   };
 in {
   imports = [
@@ -55,6 +56,10 @@ in {
           (setClass "darwin" inputs.agenix-rekey.nixosModules.default)
           inputs.ragenix.darwinModules.default
         ])
+
+        (lib.optionals (rawClass == "asahi") [
+          inputs.nixos-apple-silicon.nixosModules.apple-silicon-support
+        ])
       ];
     };
 
@@ -76,7 +81,7 @@ in {
 
       tara = {
         arch = "aarch64";
-        class = "nixos";
+        class = "asahi";
       };
 
       verenia = {
