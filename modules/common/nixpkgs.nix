@@ -12,6 +12,7 @@
       # explicately allow some unfree software
       allowUnfreePredicate = pkg:
         builtins.elem (lib.getName pkg) [
+          # keep-sorted start
           "broadcom-sta"
           "claude-desktop"
           "discord"
@@ -20,6 +21,8 @@
           "minecraft-server"
           "obsidian"
           "raycast"
+          "widevine-cdm"
+          # keep-sorted end
         ];
     };
 
