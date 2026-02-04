@@ -1,6 +1,5 @@
 {
   config,
-  pkgs,
   lib,
   ...
 }: let
@@ -14,20 +13,8 @@ in {
       persist.dirs = ["/var/lib/tailscale"];
     };
 
-    networking.firewall = {
-      # allow tailscale UDP port through firewall
-      allowedUDPPorts = [config.services.tailscale.port];
-
-      # strict filtering breaks tailscale exit node
-      checkReversePath = "loose";
-
-      # trust tailscale interface
-      trustedInterfaces = ["${config.services.tailscale.interfaceName}"];
-    };
-
-    environment.systemPackages = with pkgs; [
-      tailscale
-    ];
+    # trust tailscale interface
+    networking.firewall.trustedInterfaces = ["${config.services.tailscale.interfaceName}"];
 
     services.tailscale = {
       enable = true;
@@ -37,13 +24,18 @@ in {
       extraUpFlags =
         [
           "--reset"
+          "--operator=${config.me.username}"
           "--login-server=https://${config.garden.services.headscale.domain}"
         ]
-        ++ lib.optionals isServer ["--advertise-exit-node"];
+        ++ lib.optionals isServer [
+          "--advertise-tags"
+          "tag:server,tag:exit"
+          "--advertise-exit-node"
+        ];
 
       useRoutingFeatures =
         if isServer
-        then "server"
+        then "both"
         else "client";
     };
   };
