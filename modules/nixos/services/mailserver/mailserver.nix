@@ -108,7 +108,7 @@ in {
     };
 
     services = {
-      postfix.config.smtp_hello_name = config.mailserver.fqdn;
+      postfix.settings.main.smtp_hello_name = config.mailserver.fqdn;
     };
 
     # isn't automatically detected as nginx isn't proxying mail.xenia.dog
@@ -146,8 +146,7 @@ in {
       fqdn = cfg.domain;
       domains = ["${baseDomain}"];
 
-      certificateScheme = "acme";
-      acmeCertificateName = baseDomain;
+      x509.useACMEHost = baseDomain;
 
       fullTextSearch = {
         enable = true;
