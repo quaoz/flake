@@ -27,7 +27,7 @@ in {
     contents = [
       {
         # incase i mess up
-        source = pkgs.memtest86plus + "/memtest.bin";
+        source = pkgs.memtest86plus + "/mt86plus.efi";
         target = "/boot/memtest.bin";
       }
       {

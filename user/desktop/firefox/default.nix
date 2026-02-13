@@ -3,6 +3,7 @@
   pkgs,
   inputs',
   osConfig,
+  config,
   ...
 }: let
   betterfox = pkgs.fetchFromGitHub {
@@ -37,8 +38,16 @@ in {
       colorTheme.enable = true;
     };
 
-    home.sessionVariables = lib.mkIf (pkgs.stdenv.isLinux && pkgs.stdenv.isAarch64) {
-      MOZ_GMP_PATH = "${firefox-widevine}/${widevinePath}";
+    home = {
+      sessionVariables = lib.mkIf (pkgs.stdenv.isLinux && pkgs.stdenv.isAarch64) {
+        MOZ_GMP_PATH = "${firefox-widevine}/${widevinePath}";
+      };
+
+      # prepend betterfox user js to config
+      file."${config.programs.firefox.profilesPath}/default/user.js".source = pkgs.concatText "user.js" [
+        "${betterfox}/user.js"
+        (builtins.toFile "hm-user.js" config.home.file."${config.programs.firefox.profilesPath}/default/user.js".text)
+      ];
     };
 
     programs.firefox = {
@@ -49,18 +58,64 @@ in {
         id = 0;
         isDefault = true;
 
-        preConfig = builtins.readFile "${betterfox}/user.js";
-        extraConfig =
-          (builtins.readFile ./overrides.js)
-          + lib.optionalString (pkgs.stdenv.isLinux && pkgs.stdenv.isAarch64) ''
-            // https://github.com/AsahiLinux/widevine-installer/blob/main/conf/gmpwidevine.js
-            user_pref("media.gmp-widevinecdm.version", "system-installed");
-            user_pref("media.gmp-widevinecdm.visible", true);
-            user_pref("media.gmp-widevinecdm.enabled", true);
-            user_pref("media.gmp-widevinecdm.autoupdate", false);
-            user_pref("media.eme.enabled", true);
-            user_pref("media.eme.encrypted-media-encryption-scheme.enabled", true);
-          '';
+        settings =
+          {
+            # allow websites to ask you for your location
+            "permissions.default.geo" = 0;
+            # restore search engine suggestions
+            "browser.search.suggest.enabled" = true;
+
+            ## Optional Hardening - https://github.com/yokoffing/Betterfox/wiki/Optional-Hardening
+
+            # disable login manager
+            "signon.rememberSignons" = false;
+            # disable address and credit card manager
+            "extensions.formautofill.addresses.enabled" = false;
+            "extensions.formautofill.creditCards.enabled" = false;
+            # use system dns resolver
+            "network.trr.mode" = 5;
+            # delete cookies, cache, and site data on shutdown
+            "privacy.sanitize.sanitizeOnShutdown" = true;
+            "privacy.clearOnShutdown_v2.browsingHistoryAndDownloads" = false;
+            "privacy.clearOnShutdown_v2.cookiesAndStorage" = true;
+            "privacy.clearOnShutdown_v2.cache" = true;
+            "privacy.clearOnShutdown_v2.formdata" = true;
+
+            ## Smoothfox - https://github.com/yokoffing/Betterfox/blob/main/Smoothfox.js
+
+            "apz.overscroll.enabled" = true;
+            "general.smoothScroll" = true;
+            "mousewheel.min_line_scroll_amount" = 10;
+            "general.smoothScroll.mouseWheel.durationMinMS" = 80;
+            "general.smoothScroll.currentVelocityWeighting" = "0.15";
+            "general.smoothScroll.stopDecelerationWeighting" = "0.6";
+            "general.smoothScroll.msdPhysics.enabled" = false;
+
+            ## My Overrides
+
+            # resume previous session
+            "browser.startup.page" = 3;
+            # don't require extensions to be signed
+            "xpinstall.signatures.required" = false;
+            # enable vertical tabs
+            "sidebar.revamp" = true;
+            "sidebar.verticalTabs" = true;
+            "sidebar.new-sidebar.has-used" = true;
+            "sidebar.verticalTabs.dragToPinPromo.dismissed" = true;
+            # don't show bookmarks
+            "browser.toolbars.bookmarks.visibility" = "never";
+            # auto-enable extensions
+            "extensions.autoDisableScopes" = 0;
+          }
+          // lib.mkIf (pkgs.stdenv.isLinux && pkgs.stdenv.isAarch64) {
+            # https://github.com/AsahiLinux/widevine-installer/blob/main/conf/gmpwidevine.js
+            "media.gmp-widevinecdm.version" = "system-installed";
+            "media.gmp-widevinecdm.visible" = true;
+            "media.gmp-widevinecdm.enabled" = true;
+            "media.gmp-widevinecdm.autoupdate" = false;
+            "media.eme.enabled" = true;
+            "media.eme.encrypted-media-encryption-scheme.enabled" = true;
+          };
 
         extensions = {
           force = true;

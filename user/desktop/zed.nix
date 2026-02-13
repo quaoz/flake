@@ -29,19 +29,22 @@ in {
         # keep-sorted end
       ];
 
-      extraPackages = with pkgs; [
-        asm-lsp
-        bash-language-server
-        just-lsp
-        qt6.qtdeclarative
-        quickshell
-        nil
-        ruff
-        shellcheck
-        shfmt
-        ty
-        vscode-langservers-extracted
-      ];
+      extraPackages = with pkgs;
+        [
+          asm-lsp
+          bash-language-server
+          just-lsp
+          nil
+          ruff
+          shellcheck
+          shfmt
+          ty
+          vscode-langservers-extracted
+        ]
+        ++ lib.optionals pkgs.stdenv.isLinux [
+          qt6.qtdeclarative
+          quickshell
+        ];
 
       userKeymaps = [
         {
