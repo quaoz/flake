@@ -22,7 +22,7 @@ in {
     '';
 
     services.xserver.xkb = {
-      layout = cfg.layout;
+      inherit (cfg) layout;
       variant = lib.optionalString cfg.apple "mac";
     };
   };
