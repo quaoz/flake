@@ -1,14 +1,4 @@
-{inputs, ...}: {
-  virtualisation.podman = {
-    enable = true;
-    dockerCompat = true;
-    autoPrune.enable = true;
-    dockerSocket.enable = true;
-  };
-
-  imports = [
-    inputs.apple-silicon-support.nixosModules.apple-silicon-support
-  ];
+{
   hardware.asahi.peripheralFirmwareDirectory = ./firmware;
 
   boot = {
@@ -31,11 +21,33 @@
   };
 
   garden = {
-    profiles.desktop.enable = true;
+    profiles = {
+      desktop.enable = true;
+      laptop.enable = true;
+    };
 
-    system = {
-      boot.loader = "systemd-boot";
-      desktop.environment = "cosmic";
+    system.boot.loader = "systemd-boot";
+    hardware = {
+      audio.enable = true;
+      bluetooth.enable = true;
+      keyboard.apple = true;
+
+      monitors = {
+        eDP-1 = {
+          order = 0;
+          width = 3456;
+          height = 2160;
+          scale = 2.0;
+          backlightPath = "apple-panel-bl";
+        };
+
+        HDMI-A-1 = {
+          order = 1;
+          width = 3840;
+          height = 2160;
+          scale = 1.5;
+        };
+      };
     };
   };
 }

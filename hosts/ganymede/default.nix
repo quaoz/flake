@@ -3,41 +3,13 @@
   boot.initrd.availableKernelModules = ["uhci_hcd"];
 
   garden = {
-    monitoring.enable = true;
-    profiles.server.enable = true;
-
-    services = {
-      nginx.enable = true;
-      redis.enable = true;
-      postgresql.enable = true;
-
-      geoip.enable = true;
-      grafana.enable = true;
-      prometheus.enable = true;
-
-      attic.enable = true;
-      atuin.enable = true;
-      blocky.enable = true;
-      buildbot.enable = true;
-      cook-cli.enable = true;
-      glance.enable = true;
-      headscale.enable = true;
-      pocket-id.enable = true;
-      unbound.enable = true;
-      vaultwarden.enable = true;
-
-      automx.enable = true;
-      radicale.enable = true;
-      roundcube.enable = true;
-      mailserver = {
-        enable = true;
-        dns.enable = true;
-      };
+    profiles = {
+      server.enable = true;
+      monitoring.enable = true;
+      persistence.enable = true;
     };
 
-    persist.enable = true;
     system.boot.loader = "grub";
-
     hardware = {
       cpu = "intel";
       virtualisation.qemu.enable = true;
@@ -91,6 +63,35 @@
             address = "fd7a:115c:a1e0::2";
           };
         };
+      };
+    };
+
+    services = {
+      nginx.enable = true;
+      redis.enable = true;
+      postgresql.enable = true;
+
+      geoip.enable = true;
+      grafana.enable = true;
+      prometheus.enable = true;
+
+      attic.enable = true;
+      atuin.enable = true;
+      blocky.enable = true;
+      buildbot.enable = true;
+      cook-cli.enable = true;
+      glance.enable = true;
+      headscale.enable = true;
+      pocket-id.enable = true;
+      unbound.enable = true;
+      vaultwarden.enable = true;
+
+      automx.enable = true;
+      radicale.enable = true;
+      roundcube.enable = true;
+      mailserver = {
+        enable = true;
+        dns.enable = true;
       };
     };
   };

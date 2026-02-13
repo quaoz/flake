@@ -13,7 +13,9 @@
 
   inputs = {
     # https://deer.social/profile/did:plc:mojgntlezho4qt7uvcfkdndg/post/3loogwsoqok2w
-    nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz";
+    # nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz";
+    # TODO: revert once firefox-beta in cache and i can switch without my computer catching fire
+    nixpkgs.url = "github:nixos/nixpkgs/4b2e4456da43055138094086b8f9a9fa30c7ab3a";
 
     # cooler nix
     lix = {
@@ -38,9 +40,12 @@
     };
 
     # apple silicon support
-    apple-silicon-support = {
+    nixos-apple-silicon = {
       url = "github:nix-community/nixos-apple-silicon";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-compat.follows = "";
+      };
     };
 
     # manage user environment with nix
@@ -67,7 +72,12 @@
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
-        agenix.follows = "agenix";
+
+        agenix.inputs = {
+          darwin.follows = "darwin";
+          home-manager.follows = "home-manager";
+          systems.follows = "systems";
+        };
       };
     };
 
@@ -78,6 +88,11 @@
         flake-parts.follows = "flake-parts";
         devshell.follows = "devshell";
         treefmt-nix.follows = "treefmt-nix";
+
+        pre-commit-hooks.inputs = {
+          flake-compat.follows = "";
+          gitignore.follows = "";
+        };
       };
     };
 
@@ -173,7 +188,6 @@
         flake-parts.follows = "flake-parts";
         base16-fish.follows = "";
         firefox-gnome-theme.follows = "";
-        nur.follows = "";
         tinted-foot.follows = "";
         tinted-kitty.follows = "";
         tinted-tmux.follows = "";
@@ -189,25 +203,28 @@
       inputs.systems.follows = "systems";
     };
 
-    agenix = {
-      url = "github:ryantm/agenix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        systems.follows = "systems";
-        home-manager.follows = "home-manager";
-        darwin.follows = "darwin";
-      };
-    };
-
     ##### tempoary #####
 
     # TODO: remove once version supporting pipe-operator in nixpkgs (>v0.5.8)
+    # WATCH: https://github.com/oppiliappan/statix/issues/139
     statix = {
       url = "github:oppiliappan/statix";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-parts.follows = "flake-parts";
         systems.follows = "systems";
+      };
+    };
+
+    librepods = {
+      url = "github:kavishdevar/librepods/linux/rust";
+      inputs = {
+        crane.follows = "ragenix/crane";
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+        systems.follows = "systems";
+        treefmt-nix.follows = "treefmt-nix";
+        flake-compat.follows = "";
       };
     };
   };
