@@ -13,6 +13,8 @@
       else 1
   );
 
+  mod = a: n: a - (n * builtins.floor (a / n));
+
   /**
   like `lib.recursiveUpdate` but throws an error if an attribute will be overwritten
 
@@ -262,5 +264,5 @@
   isEnabled = config: program:
     builtins.hasAttr program config.programs && config.programs.${program}.enable;
 in {
-  inherit ldTernary isEnabled onlyDarwin onlyLinux safeRecursiveUpdate safeMerge hostsWhere hosts pow;
+  inherit ldTernary isEnabled onlyDarwin onlyLinux safeRecursiveUpdate safeMerge hostsWhere hosts pow mod;
 }
