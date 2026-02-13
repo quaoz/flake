@@ -20,6 +20,7 @@
           "keka"
           "minecraft-server"
           "obsidian"
+          "ouch"
           "raycast"
           "widevine-cdm"
           # keep-sorted end

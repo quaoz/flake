@@ -74,7 +74,8 @@ in {
       in {
         description = "configure dns records";
         wantedBy = ["multi-user.target"];
-        after = ["network.target"];
+        after = ["network-online.target"];
+        wants = ["network-online.target"];
 
         serviceConfig.Type = "oneshot";
         script = "${lib.getExe pkgs.dnscontrol} push --config ${dnsconfig} --creds ${dns.outputs.creds}";

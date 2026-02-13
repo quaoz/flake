@@ -1,4 +1,4 @@
-let
+_: let
   /**
   wraps an existing package with additional command-line flags
 

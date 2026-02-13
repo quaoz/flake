@@ -22,23 +22,6 @@ in {
 
     perClass = rawClass: let
       class = additionalClasses.${rawClass} or rawClass;
-
-      # agenix-rekey uses flake-parts (we pin it to a newer version) which sets
-      # `_class` for nixosModules, as agenix-rekey doesn't provide a darwinModule
-      #  we have to override `_class`
-      #
-      # https://github.com/hercules-ci/flake-parts/blob/2cccadc7357c0ba201788ae99c4dfa90728ef5e0/modules/nixosModules.nix
-      setClass = class: let
-        recurse = n: v:
-          if builtins.isAttrs v
-          then builtins.mapAttrs recurse v
-          else if n == "imports"
-          then builtins.map (recurse null) v
-          else if n == "_class"
-          then class
-          else v;
-      in
-        recurse null;
     in {
       modules = builtins.concatLists [
         (self.lib.nixFiles ../modules/${class})
@@ -46,15 +29,17 @@ in {
         (lib.optionals (class == "nixos") [
           inputs.home-manager.nixosModules.home-manager
           inputs.stylix.nixosModules.stylix
-          inputs.agenix-rekey.nixosModules.default
           inputs.ragenix.nixosModules.default
+          inputs.agenix-rekey.nixosModules.default
         ])
 
         (lib.optionals (class == "darwin") [
           inputs.home-manager.darwinModules.home-manager
           inputs.stylix.darwinModules.stylix
-          (setClass "darwin" inputs.agenix-rekey.nixosModules.default)
           inputs.ragenix.darwinModules.default
+          # WATCH: https://github.com/oddlama/agenix-rekey/issues/133
+          #      - https://github.com/oddlama/agenix-rekey/pull/142
+          (import "${inputs.agenix-rekey}/modules/agenix-rekey.nix" inputs.nixpkgs)
         ])
 
         (lib.optionals (rawClass == "asahi") [

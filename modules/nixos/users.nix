@@ -34,6 +34,7 @@ in {
             ++ ifGroupsExist [
               "audio"
               "networkmanager"
+              "pipewire"
               "systemd-journal"
               "video"
             ];
