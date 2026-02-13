@@ -13,7 +13,7 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    garden.persist.dirs = [
+    garden.profiles.persistence.dirs = [
       {
         directory = "/var/lib/${config.services.prometheus.stateDir}";
         inherit (cfg) user group;
@@ -25,10 +25,10 @@ in {
       inherit (cfg) port;
 
       scrapeConfigs =
-        self.lib.hostsWhere self (_: hc: hc.config.garden.monitoring.enable) {}
+        self.lib.hostsWhere self (_: hc: hc.config.garden.profiles.monitoring.enable) {}
         |> lib.mapAttrsToList (
           hn: hc: (
-            lib.filterAttrs (_: sc: builtins.isAttrs sc && sc.enable) hc.config.garden.monitoring
+            lib.filterAttrs (_: sc: builtins.isAttrs sc && sc.enable) hc.config.garden.profiles.monitoring
             |> lib.mapAttrsToList (sn: sc: {
               job_name = "${hn}-${sn}";
               static_configs = [

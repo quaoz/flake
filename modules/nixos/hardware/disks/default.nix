@@ -29,18 +29,14 @@ in {
 
     impermanence = {
       enable = mkEnableOption "BTRFS setup for impermanence";
-      # TODO: better explanation
-      future =
-        mkEnableOption "BTRFS setup for future impermanence use"
-        // {
-          default = true;
-        };
+      future = mkEnableOption "BTRFS setup for impermanence without actually enabling impermanence" // {default = true;};
+
       location =
         self.lib.mkOpt (lib.types.pathWith {
           absolute = true;
           inStore = false;
         })
-        config.garden.persist.location "Where to store state";
+        config.garden.profiles.persistence.location "Where to store state";
     };
 
     partitions = {
@@ -55,35 +51,34 @@ in {
   config = lib.mkIf cfg.enable {
     assertions = [
       {
-        assertion = cfg.impermanence.enable -> config.garden.persist.enable;
+        assertion = cfg.impermanence.enable -> config.garden.profiles.persistence.enable;
         message = ''
-          Impermanence is enabled but persistence isn't. Nothing on the root
-          subvolume will persist.
+          Disk impermanence is enabled without the persistence profile. Nothing
+          on the root subvolume will persist.
 
-          You should either:
-            - enable `garden.persist.enable`
-            - or disable `garden.hardware.disks.impermanence.enable`
+          To use impermanence enable `garden.profiles.persistence`, otherwise
+          disable `garden.hardware.disks.impermanence`.
         '';
       }
       {
-        assertion = config.garden.persist.enable -> cfg.impermanence.enable;
+        assertion = config.garden.profiles.persistence.enable -> cfg.impermanence.enable;
         message = ''
-          Persistence is enabled without disk support. Your root partition is
-          not being cleared between reboots.
+          The persistence profile is enabled without disk support. Your root
+          partition is not being cleared between reboots.
 
-          You should either:
-            - enable `garden.hardware.disks.impermanence.enable`
-            - or disable `garden.hardware.disks.enable`
+          To use impermanence enable `garden.hardware.disks.impermanence`,
+          otherwise disable `garden.profiles.persistence`.
         '';
       }
       {
-        assertion = config.garden.persist.location == cfg.impermanence.location;
+        assertion = config.garden.profiles.persistence.location == cfg.impermanence.location;
         message = ''
-          Persistence and impermenance are using different locations, ${config.garden.persist.location}
-          and ${cfg.impermanence.location} respectively.
+          Persistence and impermenance are using different locations:
+            - ${config.garden.profiles.persistence.location}
+            - ${cfg.impermanence.location}
 
           You should omit `garden.hardware.disks.impermanence.location` to use
-          the same value as `garden.persist.location`.
+          the same value as `garden.profiles.persistence.location`.
         '';
       }
     ];

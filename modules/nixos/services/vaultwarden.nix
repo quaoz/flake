@@ -2,7 +2,6 @@
   lib,
   self,
   config,
-  pkgs,
   ...
 }: let
   inherit (config.age) secrets;
@@ -41,7 +40,7 @@ in {
 
   config = lib.mkIf cfg.enable {
     garden = {
-      persist.dirs = [
+      profiles.persistence.dirs = [
         {
           directory = config.services.vaultwarden.config.DATA_DIR;
           inherit (cfg) user group;
@@ -107,21 +106,6 @@ in {
     services = {
       vaultwarden = {
         enable = true;
-        # TODO: remove once version supporting SSO (>1.34.3) in nixpkgs
-        package = pkgs.vaultwarden.overrideAttrs (final: prev: {
-          src = prev.src.override {
-            rev = "3f010a50af51aa826c2889e252c39ef6fe382d77";
-            hash = "sha256-iTTS3tqOqsAm5qY3BJ7FqDpBztbMzE4V1095wrLVsVQ=";
-          };
-
-          cargoHash = "sha256-F7we9rurJ7srz54lsuSrdoIZpkGE+4ncW3+wjEwaD7M=";
-
-          cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
-            inherit (final) src;
-            name = "${final.pname}-${final.version}";
-            hash = final.cargoHash;
-          };
-        });
 
         backupDir = "/srv/vaultwarden/backup";
         environmentFile = secrets.vaultwarden-env-file.path;

@@ -48,7 +48,7 @@ in {
         }
       ];
 
-      persist.dirs = [
+      profiles.persistence.dirs = [
         {
           inherit user group;
           directory = "/var/lib/acme";

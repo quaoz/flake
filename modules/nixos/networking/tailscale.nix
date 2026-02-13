@@ -10,7 +10,7 @@ in {
   config = {
     garden = {
       secrets.root = ["services/tailscale/authkey.age"];
-      persist.dirs = ["/var/lib/tailscale"];
+      profiles.persistence.dirs = ["/var/lib/tailscale"];
     };
 
     # trust tailscale interface

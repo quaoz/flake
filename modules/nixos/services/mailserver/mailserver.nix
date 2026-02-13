@@ -51,7 +51,7 @@ in {
       user = config.mailserver.vmailUserName;
       group = config.mailserver.vmailGroupName;
     in {
-      persist.dirs = builtins.concatLists [
+      profiles.persistence.dirs = builtins.concatLists [
         (
           builtins.map (directory: {
             inherit user group directory;

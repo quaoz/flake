@@ -4,7 +4,7 @@
   lib,
   ...
 }: {
-  garden.persist.dirs = ["/var/lib/fail2ban"];
+  garden.profiles.persistence.dirs = ["/var/lib/fail2ban"];
 
   environment.etc = {
     "fail2ban/filter.d/nginx-url-probe.local".text = ''

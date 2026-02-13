@@ -23,7 +23,7 @@ in {
 
   config = lib.mkIf cfg.enable {
     garden = {
-      persist.dirs = lib.optionals (config.services.atticd.settings.storage.type == "local") [
+      profiles.persistence.dirs = lib.optionals (config.services.atticd.settings.storage.type == "local") [
         # systemd dynamic user
         "/var/lib/private/atticd"
       ];

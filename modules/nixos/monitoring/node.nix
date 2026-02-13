@@ -4,10 +4,10 @@
   self,
   ...
 }: let
-  cfg = config.garden.monitoring.node;
+  cfg = config.garden.profiles.monitoring.node;
 in {
-  options.garden.monitoring.node = self.lib.mkMonitorOpt "node" {
-    inherit (config.garden.monitoring) enable;
+  options.garden.profiles.monitoring.node = self.lib.mkMonitorOpt "node" {
+    inherit (config.garden.profiles.monitoring) enable;
     port = 9001;
   };
 

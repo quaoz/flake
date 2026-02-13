@@ -22,7 +22,7 @@ in {
 
   config = lib.mkIf cfg.enable {
     garden = {
-      persist.dirs = [
+      profiles.persistence.dirs = [
         {
           user = "radicale";
           group = "radicale";

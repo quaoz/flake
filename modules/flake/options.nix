@@ -18,7 +18,11 @@ in {
         desktop.enable = mkEnableOption "the desktop profile";
         laptop.enable = mkEnableOption "the laptop profile";
 
+        # service monitoring, see: modules/nixos/monitoring
         monitoring.enable = mkEnableOption "the monitoring profile";
+
+        # persistence, see: modukes/nixos/system/persist
+        persistence.enable = mkEnableOption "the persistence profile";
 
         # this doesn't do anything except flag that this host is an iso so it
         # can be ignored when configuring things like build machines
@@ -36,14 +40,8 @@ in {
       # automatic service proxying, see: modules/nixos/magic
       magic = {};
 
-      # service monitoring, see: modules/nixos/monitoring
-      monitoring = {};
-
       # networking configuration, see: modules/nixos/networking
       networking = {};
-
-      # persistence, see: modukes/nixos/system/persist
-      persist = {};
 
       # thin wrapper over agenix, see: modules/common/secrets
       secrets = {};

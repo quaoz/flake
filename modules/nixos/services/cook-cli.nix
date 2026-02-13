@@ -21,7 +21,7 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    garden.persist.dirs = [
+    garden.profiles.persistence.dirs = [
       {
         inherit (cfg) user group;
         directory = config.services.cook-cli.basePath;

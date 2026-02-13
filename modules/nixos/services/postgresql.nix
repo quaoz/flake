@@ -14,7 +14,7 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    garden.persist.dirs = [
+    garden.profiles.persistence.dirs = [
       {
         directory = config.services.postgresql.dataDir;
         inherit (cfg) user group;

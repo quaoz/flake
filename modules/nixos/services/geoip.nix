@@ -14,7 +14,7 @@ in {
 
   config = lib.mkIf cfg.enable {
     garden = {
-      persist.dirs = [
+      profiles.persistence.dirs = [
         {
           inherit (cfg) user group;
           directory = config.services.geoipupdate.settings.DatabaseDirectory;

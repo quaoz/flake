@@ -8,12 +8,12 @@
   hasMonitor = name:
     self.lib.hostsWhere self (
       _: hc:
-        builtins.hasAttr name hc.config.garden.monitoring
-        && hc.config.garden.monitoring.${name}.enable
+        builtins.hasAttr name hc.config.garden.profiles.monitoring
+        && hc.config.garden.profiles.monitoring.${name}.enable
     ) {}
     != {};
 
-  hasLocalMonitor = name: config.garden.services.${name}.enable && config.garden.monitoring.${name}.enable;
+  hasLocalMonitor = name: config.garden.services.${name}.enable && config.garden.profiles.monitoring.${name}.enable;
 
   inherit (config.age) secrets;
   cfg = config.garden.services.grafana;
@@ -45,7 +45,7 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    garden.persist.dirs = [
+    garden.profiles.persistence.dirs = [
       {
         directory = config.services.grafana.dataDir;
         inherit (cfg) user group;

@@ -40,22 +40,10 @@ in {
   config = lib.mkIf cfg.enable {
     garden = {
       secrets = {
-        normal = {
-          pocket-id-encryption-key = {
-            inherit (cfg) group;
-            owner = cfg.user;
-            generator.script = "base64";
-          };
-
-          # SMTP_PASSWORD_FILE doesn't work so do this instead ig??
-          pocket-id-env-file = {
-            inherit (cfg) group;
-            owner = cfg.user;
-
-            generator = self.lib.mkEnvFile {
-              SMTP_PASSWORD = secrets.mailserver-pocket-id;
-            };
-          };
+        normal.pocket-id-encryption-key = {
+          inherit (cfg) group;
+          owner = cfg.user;
+          generator.script = "base64";
         };
 
         other = [
@@ -67,7 +55,7 @@ in {
         ];
       };
 
-      persist.dirs = [
+      profiles.persistence.dirs = [
         {
           inherit (cfg) user group;
           directory = config.services.pocket-id.dataDir;
@@ -78,8 +66,6 @@ in {
     services.pocket-id = {
       enable = true;
       purgeClients = true;
-
-      environmentFile = secrets.pocket-id-env-file.path;
 
       # https://pocket-id.org/docs/configuration/environment-variables
       settings = {
@@ -95,19 +81,18 @@ in {
 
         ENCRYPTION_KEY_FILE = secrets.pocket-id-encryption-key.path;
         MAXMIND_LICENSE_KEY_FILE = secrets."api-maxmind-${cfg.user}".path;
+        SMTP_PASSWORD_FILE = secrets.mailserver-pocket-id.path;
 
         UI_CONFIG_DISABLED = true;
         ALLOW_USER_SIGNUPS = "withToken";
 
-        # WATCH: https://github.com/pocket-id/pocket-id/issues/810
-        EMAILS_VERIFIED = true;
+        EMAIL_VERIFICATION_ENABLED = true;
         EMAIL_LOGIN_NOTIFICATION_ENABLED = true;
         EMAIL_API_KEY_EXPIRATION_ENABLED = true;
         SMTP_HOST = config.garden.services.mailserver.domain;
         SMTP_PORT = 465;
         SMTP_FROM = "auth@${domain}";
         SMTP_USER = "auth@${domain}";
-        # SMTP_PASSWORD_FILE = secrets.mailserver-pocket-id.path;
         SMTP_TLS = "tls";
       };
     };

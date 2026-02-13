@@ -5,9 +5,9 @@
   pkgs,
   ...
 }: let
-  cfg = config.garden.monitoring.fail2ban;
+  cfg = config.garden.profiles.monitoring.fail2ban;
 in {
-  options.garden.monitoring.fail2ban = self.lib.mkMonitorOpt "fail2ban" {
+  options.garden.profiles.monitoring.fail2ban = self.lib.mkMonitorOpt "fail2ban" {
     inherit (config.services.fail2ban) enable;
     port = 9003;
   };
@@ -23,7 +23,8 @@ in {
     systemd.services.prometheus-fail2ban-exporter = {
       description = "fail2ban prometheus exporter";
       wantedBy = ["multi-user.target"];
-      after = ["network.target" "geoipupdate.service"];
+      after = ["network-online.target" "geoipupdate.service"];
+      wants = ["network-online.target"];
 
       script = ''
         geoip="${config.services.geoipupdate.settings.DatabaseDirectory}/GeoLite2-City.mmdb"

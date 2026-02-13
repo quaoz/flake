@@ -5,9 +5,9 @@
   ...
 }: let
   full = config.garden.services.grafana.enable;
-  cfg = config.garden.monitoring.blocky;
+  cfg = config.garden.profiles.monitoring.blocky;
 in {
-  options.garden.monitoring.blocky = self.lib.mkMonitorOpt "blocky" {
+  options.garden.profiles.monitoring.blocky = self.lib.mkMonitorOpt "blocky" {
     inherit (config.garden.services.blocky) enable;
     port = 9002;
   };

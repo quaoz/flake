@@ -88,8 +88,8 @@ in {
 
         identityPaths = [
           (
-            if !isDarwin && config.garden.persist.enable
-            then "${config.garden.persist.location}/etc/ssh/ssh_host_ed25519_key"
+            if !isDarwin && config.garden.profiles.persistence.enable
+            then "${config.garden.profiles.persistence.location}/etc/ssh/ssh_host_ed25519_key"
             else "/etc/ssh/ssh_host_ed25519_key"
           )
           "/Users/${username}/.ssh/id_ed25519"

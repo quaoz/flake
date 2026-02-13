@@ -3,18 +3,10 @@
   lib,
   ...
 }: let
-  cfg = config.garden.monitoring;
+  cfg = config.garden.profiles.monitoring;
 in {
-  options.garden.monitoring = {
-    enable =
-      lib.mkEnableOption "monitoring"
-      // {
-        default = config.garden.profiles.server.enable;
-      };
-  };
-
   config = lib.mkIf (!cfg.enable) {
-    garden.monitoring = {
+    garden.profiles.monitoring = {
       node.enable = lib.mkForce false;
       blocky.enable = lib.mkForce false;
       fail2ban.enable = lib.mkForce false;

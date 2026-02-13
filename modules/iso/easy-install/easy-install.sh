@@ -70,7 +70,7 @@ if [[ "$(nix eval "$FLAKE_URL#nixosConfigurations.$hostname.config.garden.hardwa
 fi
 
 persist=false
-if [[ "$(nix eval "$FLAKE_URL#nixosConfigurations.$hostname.config.garden.persist.enable")" == "true" ]]; then
+if [[ "$(nix eval "$FLAKE_URL#nixosConfigurations.$hostname.config.garden.profiles.persistence.enable")" == "true" ]]; then
 	persist=true
 fi
 
@@ -171,7 +171,7 @@ fi
 
 sshdir='/mnt/etc/ssh'
 if $persist; then
-	state_location="$(nix eval --raw "$FLAKE_URL#nixosConfigurations.$hostname.config.garden.persist.location")"
+	state_location="$(nix eval --raw "$FLAKE_URL#nixosConfigurations.$hostname.config.garden.profiles.persistence.location")"
 	sshdir="/mnt${state_location}/etc/ssh"
 fi
 
