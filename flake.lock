@@ -388,29 +388,6 @@
         "type": "gitlab"
       }
     },
-    "gradient": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1767563956,
-        "narHash": "sha256-hJhGG6oTQjNDcoph+jIYUCfKMOFY9i6M11GKh2fbPrE=",
-        "owner": "wavelens",
-        "repo": "gradient",
-        "rev": "8583753c76b899e782f7f0ed9d5b0667d6bd8bf6",
-        "type": "github"
-      },
-      "original": {
-        "owner": "wavelens",
-        "repo": "gradient",
-        "type": "github"
-      }
-    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -471,13 +448,15 @@
       "locked": {
         "lastModified": 1770919233,
         "narHash": "sha256-OsR4AKqEzK1HOqUQRJt4ETcgSlVrIOU+vucxSdTdUzs=",
+        "ref": "refs/heads/main",
         "rev": "9520e663c8d05e0429a65b083b685c38ce5eed4b",
-        "type": "tarball",
-        "url": "https://git.lix.systems/api/v1/repos/lix-project/lix/archive/9520e663c8d05e0429a65b083b685c38ce5eed4b.tar.gz?rev=9520e663c8d05e0429a65b083b685c38ce5eed4b"
+        "revCount": 18930,
+        "type": "git",
+        "url": "https://git.lix.systems/lix-project/lix"
       },
       "original": {
-        "type": "tarball",
-        "url": "https://git.lix.systems/lix-project/lix/archive/main.tar.gz"
+        "type": "git",
+        "url": "https://git.lix.systems/lix-project/lix"
       }
     },
     "lix-module": {
@@ -496,13 +475,15 @@
       "locked": {
         "lastModified": 1767364176,
         "narHash": "sha256-l6YdEBYQxXjD8ujqvc0tKdwWc3K8UQOi+E4Y3DKQ318=",
+        "ref": "refs/heads/main",
         "rev": "1688100bba140492658d597f6b307c327f35c780",
-        "type": "tarball",
-        "url": "https://git.lix.systems/api/v1/repos/lix-project/nixos-module/archive/1688100bba140492658d597f6b307c327f35c780.tar.gz?rev=1688100bba140492658d597f6b307c327f35c780"
+        "revCount": 179,
+        "type": "git",
+        "url": "https://git.lix.systems/lix-project/nixos-module"
       },
       "original": {
-        "type": "tarball",
-        "url": "https://git.lix.systems/lix-project/nixos-module/archive/main.tar.gz"
+        "type": "git",
+        "url": "https://git.lix.systems/lix-project/nixos-module"
       }
     },
     "locker": {
@@ -522,22 +503,6 @@
       "original": {
         "owner": "tgirlcloud",
         "repo": "locker",
-        "type": "github"
-      }
-    },
-    "nix-flatpak": {
-      "locked": {
-        "lastModified": 1767983141,
-        "narHash": "sha256-7ZCulYUD9RmJIDULTRkGLSW1faMpDlPKcbWJLYHoXcs=",
-        "owner": "gmodena",
-        "repo": "nix-flatpak",
-        "rev": "440818969ac2cbd77bfe025e884d0aa528991374",
-        "type": "github"
-      },
-      "original": {
-        "owner": "gmodena",
-        "ref": "latest",
-        "repo": "nix-flatpak",
         "type": "github"
       }
     },
@@ -582,45 +547,7 @@
         "type": "github"
       }
     },
-    "nixos-raspberrypi": {
-      "inputs": {
-        "argononed": [],
-        "flake-compat": [],
-        "nixos-images": [],
-        "nixpkgs": "nixpkgs"
-      },
-      "locked": {
-        "lastModified": 1769297295,
-        "narHash": "sha256-WNI4AzwrYPeKzI/maEE+pRm8y+l9+zELkmVzMzOrOfY=",
-        "owner": "nvmd",
-        "repo": "nixos-raspberrypi",
-        "rev": "251861d8e7e4806e185a8e41e09b3ad1e6e088e6",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nvmd",
-        "ref": "main",
-        "repo": "nixos-raspberrypi",
-        "type": "github"
-      }
-    },
     "nixpkgs": {
-      "locked": {
-        "lastModified": 1769296100,
-        "narHash": "sha256-T5VGtbz2X+waw2P1dYvLa56osxj3cNZArfa5aRBVT+s=",
-        "owner": "nvmd",
-        "repo": "nixpkgs",
-        "rev": "87f37c7a374071ec0924b99b846c1a7cc44a8c6c",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nvmd",
-        "ref": "modules-with-keys-25.11",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs_2": {
       "locked": {
         "lastModified": 1770843129,
         "narHash": "sha256-FNqAGuFYsFlDzKEg+yxflt01DAM0ja+NfXxFcD/oHoA=",
@@ -738,17 +665,14 @@
         "firefox-addons": "firefox-addons",
         "flake-parts": "flake-parts",
         "flake-utils": "flake-utils",
-        "gradient": "gradient",
         "home-manager": "home-manager",
         "librepods": "librepods",
         "lix": "lix",
         "lix-module": "lix-module",
         "locker": "locker",
-        "nix-flatpak": "nix-flatpak",
         "nix-index-database": "nix-index-database",
         "nixos-apple-silicon": "nixos-apple-silicon",
-        "nixos-raspberrypi": "nixos-raspberrypi",
-        "nixpkgs": "nixpkgs_2",
+        "nixpkgs": "nixpkgs",
         "preservation": "preservation",
         "ragenix": "ragenix",
         "simple-nixos-mailserver": "simple-nixos-mailserver",
