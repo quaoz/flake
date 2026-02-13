@@ -4,7 +4,7 @@
   lib,
   ...
 }: {
-  config = lib.mkIf (osConfig.garden.profiles.desktop.enable && pkgs.stdenv.isLinux) {
+  config = lib.mkIf (pkgs.stdenv.isLinux && osConfig.garden.profiles.desktop.enable) {
     programs.vicinae = {
       enable = true;
       systemd.enable = true;

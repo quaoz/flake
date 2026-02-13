@@ -19,13 +19,20 @@
     jql
 
     # tar | zip | ... --> ouch
-    ouch
+    (ouch.override {enableUnfree = true;})
+
+    # ps --> procs
+    procs
 
     # sed --> sd
     sd
 
-    # ps --> procs
-    procs
+    # cloc --> tokei
+    tokei
+
+    uutils-coreutils-noprefix
+    uutils-diffutils
+    uutils-findutils
   ];
 
   programs = {

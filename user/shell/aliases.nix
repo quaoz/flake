@@ -18,7 +18,7 @@ in {
       "..." = "cd ../..";
       "...." = "cd ../../..";
       "....." = "cd ../../../..";
-      "flake" = "cd \"$FLAKE\"";
+      "flake" = "cd \"\${FLAKE:-$HOME/.config/flake}\"";
 
       "sudo" = "sudo ";
       "reload" = "exec ${shell} -l";
@@ -31,13 +31,15 @@ in {
       "serve" = "${lib.getExe pkgs.python3Minimal} -m http.server";
     }
 
-    # darwin specific aliases
-    (lib.mkIf pkgs.stdenv.isDarwin {
+    # desktop specific aliases
+    (lib.mkIf osConfig.garden.profiles.desktop.enable {
       dt = "cd ~/Desktop";
       dl = "cd ~/Downloads";
       doc = "cd ~/Documents";
-      prj = "cd ~/Projects";
+    })
 
+    # darwin specific aliases
+    (lib.mkIf pkgs.stdenv.isDarwin {
       deq = "sudo xattr -r -d com.apple.quarantine";
     })
 

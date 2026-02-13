@@ -25,7 +25,5 @@
 
     # misc
     inetutils
-    iperf
-    whois
   ];
 }

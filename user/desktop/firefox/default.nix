@@ -75,6 +75,7 @@ in {
             custom-new-tab-page
             darkreader
             don-t-fuck-with-paste
+            ff2mpv
             indie-wiki-buddy
             justdeleteme
             search-by-image

@@ -10,7 +10,7 @@
 
       # WATCH: https://github.com/FiloSottile/yubikey-agent/issues/153
       #      - https://github.com/FiloSottile/yubikey-agent/pull/155
-      package = pkgs.yubikey-agent.overrideAttrs (final: prev: {
+      package = pkgs.yubikey-agent.overrideAttrs (_final: _prev: {
         src = pkgs.fetchFromGitHub {
           owner = "e-nomem";
           repo = "yubikey-agent";

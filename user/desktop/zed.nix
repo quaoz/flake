@@ -11,20 +11,36 @@ in {
     programs.zed-editor = {
       enable = true;
 
+      mutableUserKeymaps = false;
+      mutableUserSettings = false;
+      mutableUserTasks = false;
+
       extensions = [
         # keep-sorted start
+        "assembly"
         "basher"
         "git-firefly"
-        "haskell"
-        "html"
+        "ini"
         "just"
-        "log"
         "make"
         "nix"
-        "scss"
+        "qml"
         "toml"
-        "wakatime"
         # keep-sorted end
+      ];
+
+      extraPackages = with pkgs; [
+        asm-lsp
+        bash-language-server
+        just-lsp
+        qt6.qtdeclarative
+        quickshell
+        nil
+        ruff
+        shellcheck
+        shfmt
+        ty
+        vscode-langservers-extracted
       ];
 
       userKeymaps = [
@@ -44,7 +60,7 @@ in {
           bindings = {
             escape = [
               "workspace::SendKeystrokes"
-              "cmd-s ctrl-c"
+              "save ctrl-c"
             ];
           };
         }
@@ -57,9 +73,6 @@ in {
 
         # don't try and update
         auto_update = false;
-
-        buffer_font_size = lib.mkForce 14;
-        ui_font_size = lib.mkForce 14;
 
         edit_predictions = {
           mode = "subtle";
@@ -99,6 +112,19 @@ in {
               };
             };
           };
+          rust-analyzer = {
+            # https://rust-analyzer.github.io/book/configuration.html
+            initialization_options = {
+              assist = {
+                preferSelf = true;
+              };
+            };
+          };
+          qml = {
+            binary = {
+              arguments = ["-E"];
+            };
+          };
         };
 
         # always use relative line numbers
@@ -130,8 +156,6 @@ in {
         };
 
         vim_mode = true;
-        # TODO: helix
-        # helix_mode = true;
       };
     };
   };

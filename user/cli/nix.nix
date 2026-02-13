@@ -10,8 +10,6 @@
   home.packages = with pkgs; [
     # formatter
     alejandra
-    # language server
-    nil
 
     # cli helper
     nh

@@ -12,7 +12,6 @@
     package = self.lib.ldTernary pkgs pkgs.ghostty pkgs.ghostty-bin;
 
     settings = {
-      font-size = 14;
       window-padding-x = 6;
       window-padding-y = 6;
     };
