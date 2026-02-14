@@ -6,6 +6,9 @@
 }: {
   # modern replacements for various tools
   home.packages = with pkgs; [
+    # dd --> caligula
+    caligula
+
     # cut (and sometimes awk) --> choose
     choose
 
