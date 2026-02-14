@@ -56,7 +56,7 @@
         i=$((i + 1))
       done
 
-      ${magick} -size ${sizeStr} -define shepherds:power=1.5 xc: -sparse-color Shepherds "$sparse" "$TMP/gradient.png"
+      ${magick} -size ${sizeStr} -define shepards:power=1.5 xc: -sparse-color Shepards "$sparse" "$TMP/gradient.png"
       ${magick} -size ${sizeStr} xc: +noise random -virtual-pixel tile -blur "0x$(${shuf} -n 1 -i 10-30)" -normalize -colorspace Gray -sigmoidal-contrast 15x50% -solarize 50% -auto-level "$TMP/filaments.png"
       ${magick} "$TMP/gradient.png" "$TMP/filaments.png" -alpha off -compose copy_opacity -composite -background "${colors.base00}" -alpha remove "$out"
     '';
